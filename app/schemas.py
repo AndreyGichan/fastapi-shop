@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
 
 
 class User(BaseModel):
@@ -54,3 +53,10 @@ class OrderBase(BaseModel):
     status: str
     items: list[OrderItemBase]
 
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    id: str | None
