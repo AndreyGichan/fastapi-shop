@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
-from .. import models, schemas, utils
+from .. import models, schemas, oauth2
 from ..database import get_db
 
 router = APIRouter(prefix="/products", tags=["Products"])
@@ -24,7 +24,14 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=schemas.Product, status_code=status.HTTP_201_CREATED)
-def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
+def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user),):
+    
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Доступ запрещен: только администраторы могут создавать товары",
+        )
+    
     new_product = models.Product(**product.model_dump())
     db.add(new_product)
     db.commit()
@@ -33,7 +40,7 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
 
 
 @router.put("/{id}", response_model=schemas.Product)
-def update_product(id: int, updated_product: schemas.ProductCreate, db: Session = Depends(get_db)):
+def update_product(id: int, updated_product: schemas.ProductCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),):
     product_query = db.query(models.Product).filter(models.Product.id == id)
     product =  product_query.first()
 
@@ -47,8 +54,9 @@ def update_product(id: int, updated_product: schemas.ProductCreate, db: Session 
     db.commit()
     return product_query.first()
 
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(id: int, db: Session = Depends(get_db)):
+def delete_product(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),):
     product_query = db.query(models.Product).filter(models.Product.id == id)
     product = product_query.first()
 
