@@ -24,6 +24,11 @@ class UserOut(BaseModel):
     email: str
     role: str
 
+class UserUpdate(BaseModel):
+    username: str
+    email: str
+    role: str
+
 class ProductBase(BaseModel):
     name: str
     description: str
