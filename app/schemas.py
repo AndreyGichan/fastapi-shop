@@ -47,16 +47,28 @@ class OrderItemBase(BaseModel):
     price: float
     quantity: int
 
-class OrderItem(OrderItemBase):
+class OrderItem(BaseModel):
     id: int
     product_id: int
     order_id: int
+
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+
 
 class OrderBase(BaseModel):
     total_price: float
     created_at: datetime
     status: str
-    items: list[OrderItemBase]
+    items: list[OrderItem]
+
+class OrderCreate(BaseModel):
+    items: list[OrderItemCreate]
+
+class Order(OrderBase):
+    id: int
+    user_id: int
 
 
 class Token(BaseModel):
