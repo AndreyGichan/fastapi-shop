@@ -3,7 +3,7 @@ from . import models
 from .routers import users, products, orders, auth
 from .database import engine
 
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
