@@ -51,7 +51,6 @@ class ProductCreate(ProductBase):
 
 class OrderItemBase(BaseModel):
     name: str
-    description: str
     price: float
     quantity: int
 
@@ -60,6 +59,7 @@ class OrderItem(OrderItemBase):
     id: int
     product_id: int
     order_id: int
+    description: str
 
 
 class OrderItemCreate(BaseModel):
@@ -75,7 +75,7 @@ class OrderBase(BaseModel):
     items: list[OrderItemBase]
 
 
-class OrderBaseAdmin(BaseModel):
+class Order(BaseModel):
     id: int
     total_price: float
     created_at: datetime
@@ -88,12 +88,13 @@ class OrderCreate(BaseModel):
     items: list[OrderItemCreate]
 
 
-class Order(OrderBase):
-    id: int
-    user_id: int
-
-
 class OrderStatusUpdate(BaseModel):
+    status: str
+
+class OrderStatusUpdateResponse(BaseModel):
+    id: int
+    total_price: float
+    created_at: datetime
     status: str
 
 

@@ -6,7 +6,7 @@ from .. import database
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
-@router.get("/", response_model=list[schemas.OrderBaseAdmin])
+@router.get("/", response_model=list[schemas.Order])
 def get_orders(
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
@@ -38,12 +38,12 @@ def get_orders(
         orders_dict[order.id]["items"].append(
             {
                 "id": order_item.id,
-                "product_id": order_item.product_id, 
+                "product_id": order_item.product_id,
                 "order_id": order_item.order_id,
                 "quantity": order_item.quantity,
                 "name": product.name,
                 "description": product.description,
-                "price": product.price,
+                "price": order_item.price,
             }
         )
     orders = list(orders_dict.values())
@@ -78,8 +78,7 @@ def get_my_orders(
         orders_dict[order.id]["items"].append(
             {
                 "name": product.name,
-                "description": product.description,
-                "price": product.price,
+                "price": order_item.price,
                 "quantity": order_item.quantity,
             }
         )
@@ -93,14 +92,14 @@ def create_order(
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
 ):
-
-    new_order = models.Order(user_id=current_user.id, total_price=0)
-    db.add(new_order)
-    db.commit()
-    db.refresh(new_order)
-
+    if not order.items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Список товаров пуст"
+        )
+    
     total_price = 0
-    order_items = []
+    order_items_objects = []
 
     for item in order.items:
         product = (
@@ -113,31 +112,40 @@ def create_order(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Товар с id {item.product_id} не был найден",
             )
-
-        order_item = models.OrderItem(
-            order_id=new_order.id, product_id=item.product_id, quantity=item.quantity
-        )
+        if product.quantity < item.quantity: # type: ignore
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Недостаточно товара '{product.name}' на складе",
+            )
         total_price += product.price * item.quantity
-        db.add(order_item)
-        order_items.append(
-            {
-                "id": order_item.id,
-                "product_id": product.id,
-                "name": product.name,
-                "price": product.price,
-                "quantity": item.quantity,
-            }
+
+        order_items_objects.append(
+            models.OrderItem(
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=product.price
+            )
         )
+        product.quantity -= item.quantity  # type: ignore
 
-    db.query(models.Order).filter(models.Order.id == new_order.id).update(
-        {models.Order.total_price.name: total_price}
+    new_order = models.Order(
+        user_id=current_user.id,
+        total_price=total_price,
+        items=order_items_objects
     )
+    db.add(new_order)
     db.commit()
+    db.refresh(new_order)
 
+    for order_item in new_order.items:
+        if not getattr(order_item, "product", None):
+            order_item.product = db.query(models.Product).filter(models.Product.id == order_item.product_id).first()
+        order_item.name = order_item.product.name if order_item.product else ""
+        
     return new_order
 
 
-@router.put("/{id}", response_model=schemas.OrderBase)
+@router.put("/{id}", response_model=schemas.OrderStatusUpdateResponse)
 def update_order_status(
     id: int,
     updated_order: schemas.OrderStatusUpdate,

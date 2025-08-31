@@ -45,7 +45,7 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("now()"),
         ),
-        sa.Column("status", sa.String, default="pending"),
+        sa.Column("status", sa.String, default="в ожидании"),
     )
     op.create_table(
         "order_items",

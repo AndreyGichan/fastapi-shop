@@ -12,7 +12,7 @@ class User(Base):
     username = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
-    role = Column(String, nullable=False, default="guest")
+    role = Column(String, nullable=False, default="user")
 
 
 class Product(Base):
@@ -38,7 +38,7 @@ class Order(Base):
     created_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
     )
-    status = Column(String, default="pending")
+    status = Column(String, default="в ожидании")
 
     user = relationship("User")
     items = relationship("OrderItem", back_populates="order")
@@ -55,6 +55,7 @@ class OrderItem(Base):
         Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False
     )
     quantity = Column(Integer, nullable=False)
+    price = Column(Float, nullable=False)
 
     order = relationship("Order", back_populates="items")
     product = relationship("Product")
