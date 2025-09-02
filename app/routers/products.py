@@ -5,6 +5,8 @@ from .. import models, schemas, oauth2
 from .. import database
 from typing import Optional
 
+ALLOWED_SORT_FIELDS = {"price", "name", "quantity"}
+
 router = APIRouter(prefix="/products", tags=["Products"])
 
 @router.get("/", response_model=list[schemas.ProductBase])
@@ -18,23 +20,30 @@ def get_products(
     sort_order: str = Query("desc", description="Порядок сортировки")
 
 ):
+    if min_price is not None and max_price is not None and min_price > max_price:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="min_price не может быть больше max_price"
+        )
+    
     conditions = []
-    if max_price:
+    if max_price is not None:
         conditions.append(models.Product.price <= max_price)
-    if min_price:
+    if min_price is not None:
         conditions.append(models.Product.price >= min_price)
     if in_stock is True:
         conditions.append(models.Product.quantity > 0)
 
-    query = db.query(models.Product).filter(models.Product.name.contains(search), *conditions)
+    query = db.query(models.Product).filter(models.Product.name.ilike(f"%{search}%"), *conditions)
 
     if sort_by:
-        sort_column = getattr(models.Product, sort_by, None)
-        if sort_column:
-            if sort_order == "asc":
-                query = query.order_by(asc(sort_column))
-            else:
-                query = query.order_by(desc(sort_column))
+        if sort_by not in ALLOWED_SORT_FIELDS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Недопустимое поле сортировки: {sort_by}"
+            )
+        sort_column = getattr(models.Product, sort_by)
+        query = query.order_by(asc(sort_column) if sort_order == "asc" else desc(sort_column))
 
     else:
         query = query.order_by(models.Product.id)
