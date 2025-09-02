@@ -12,11 +12,12 @@ router = APIRouter(prefix="/products", tags=["Products"])
 @router.get("/", response_model=list[schemas.ProductBase])
 def get_products(
     db: Session = Depends(database.get_db),
-    search: Optional[str] = "",
+    search: str = Query("", description="Поиск по названию"),
     max_price: float | None = Query(None, ge=0, description="Фильтр по максимальной цене"),
     min_price: float | None = Query(None, ge=0, description="Фильтр по минимальной цене"),
     in_stock:  bool = Query(None, description="Фильтр по наличию товара"),
-    sort_by: str = Query(None, description="Поле для сортировки"),
+    category: str | None = Query(None, description="Фильтр по категории"),
+    sort_by: str | None = Query(None, description="Поле для сортировки"),
     sort_order: str = Query("desc", description="Порядок сортировки")
 
 ):
@@ -33,6 +34,8 @@ def get_products(
         conditions.append(models.Product.price >= min_price)
     if in_stock is True:
         conditions.append(models.Product.quantity > 0)
+    if category:
+        conditions.append(models.Product.category == category)
 
     query = db.query(models.Product).filter(models.Product.name.ilike(f"%{search}%"), *conditions)
 
