@@ -1,13 +1,45 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
 from .. import database
+from typing import Optional
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
 @router.get("/", response_model=list[schemas.ProductBase])
-def get_products(db: Session = Depends(database.get_db)):
-    products = db.query(models.Product).all()
+def get_products(
+    db: Session = Depends(database.get_db),
+    search: Optional[str] = "",
+    max_price: float | None = Query(None, ge=0, description="Фильтр по максимальной цене"),
+    min_price: float | None = Query(None, ge=0, description="Фильтр по минимальной цене"),
+    in_stock:  bool = Query(None, description="Фильтр по наличию товара"),
+    sort_by: str = Query(None, description="Поле для сортировки"),
+    sort_order: str = Query("desc", description="Порядок сортировки")
+
+):
+    conditions = []
+    if max_price:
+        conditions.append(models.Product.price <= max_price)
+    if min_price:
+        conditions.append(models.Product.price >= min_price)
+    if in_stock is True:
+        conditions.append(models.Product.quantity > 0)
+
+    query = db.query(models.Product).filter(models.Product.name.contains(search), *conditions)
+
+    if sort_by:
+        sort_column = getattr(models.Product, sort_by, None)
+        if sort_column:
+            if sort_order == "asc":
+                query = query.order_by(asc(sort_column))
+            else:
+                query = query.order_by(desc(sort_column))
+
+    else:
+        query = query.order_by(models.Product.id)
+
+    products = query.all()
     return products
 
 
