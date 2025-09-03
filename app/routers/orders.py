@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import asc, desc
 from .. import models, schemas, oauth2
 from .. import database
+
+ALLOWED_SORT_FIELDS = {"total_price", "status", "created_at", "user_id"}
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -10,6 +13,12 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
 def get_orders(
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
+    search_by_status: str = Query("", detail="Поиск по статусу"),
+    search_by_product_name: str = Query("", detail="Поиск по названию товара в заказе"),
+    max_total_price: float | None = Query(None, ge=0, detail="Фильтр по максимальной стоимости заказа"),
+    min_total_price: float | None = Query(None, ge=0, detail="Фильтр по минимальной стоимости заказа"),
+    sort_by: str | None = Query(None, description="Поле для сортировки"),
+    sort_order: str = Query("desc", description="Порядок сортировки")
 ):
 
     if current_user.role != "admin":
@@ -17,12 +26,41 @@ def get_orders(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Доступ запрещен: только администраторы могут получать информацию о других заказах",
         )
-    results = (
+    if min_total_price is not None and max_total_price is not None and min_total_price > max_total_price:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="min_total_price не может быть больше max_total_price"
+        )
+    conditions= []
+    if max_total_price is not None:
+        conditions.append(models.Order.total_price <= max_total_price)
+
+    if min_total_price is not None:
+        conditions.append(models.Order.total_price >= min_total_price)
+        
+    query = (
         db.query(models.Order, models.OrderItem, models.Product)
+        .filter(models.Order.status.ilike(f"%{search_by_status}%"), *conditions)
         .join(models.OrderItem, models.Order.id == models.OrderItem.order_id)
         .join(models.Product, models.Product.id == models.OrderItem.product_id)
-        .all()
     )
+
+    if search_by_product_name is not None:
+        query = query.filter(models.Product.name.ilike(f"%{search_by_product_name}%"))
+
+    if sort_by:
+        if sort_by not in ALLOWED_SORT_FIELDS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Недопустимое поле сортировки: {sort_by}"
+            )
+        sort_column = getattr(models.Order, sort_by)
+        query = query.order_by(asc(sort_column) if sort_order == "asc" else desc(sort_column))
+
+    else:
+        query = query.order_by(models.Order.id)
+
+    results = query.all()
 
     orders_dict = {}
     for order, order_item, product in results:
@@ -55,16 +93,48 @@ def get_orders(
 def get_my_orders(
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
+    search_by_status: str = Query("", detail="Поиск по статусу"),
+    search_by_product_name: str = Query("", detail="Поиск по названию товара в заказе"),
+    max_total_price: float | None = Query(None, ge=0, detail="Фильтр по максимальной стоимости заказа"),
+    min_total_price: float | None = Query(None, ge=0, detail="Фильтр по минимальной стоимости заказа"),
+    sort_by: str | None = Query(None, description="Поле для сортировки"),
+    sort_order: str = Query("desc", description="Порядок сортировки")
 ):
+    if min_total_price is not None and max_total_price is not None and min_total_price > max_total_price:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="min_total_price не может быть больше max_total_price"
+        )
+    conditions= []
+    if max_total_price is not None:
+        conditions.append(models.Order.total_price <= max_total_price)
 
-    results = (
+    if min_total_price is not None:
+        conditions.append(models.Order.total_price >= min_total_price)
+
+    query = (
         db.query(models.Order, models.OrderItem, models.Product)
         .join(models.OrderItem, models.Order.id == models.OrderItem.order_id)
         .join(models.Product, models.Product.id == models.OrderItem.product_id)
-        .filter(models.Order.user_id == current_user.id)
-        .all()
+        .filter(models.Order.user_id == current_user.id, models.Order.status.ilike(f"%{search_by_status}%"), *conditions)
     )
+    if search_by_product_name is not None:
+        query = query.filter(models.Product.name.ilike(f"%{search_by_product_name}%"))
 
+
+    if sort_by:
+        if sort_by not in ALLOWED_SORT_FIELDS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Недопустимое поле сортировки: {sort_by}"
+            )
+        sort_column = getattr(models.Order, sort_by)
+        query = query.order_by(asc(sort_column) if sort_order == "asc" else desc(sort_column))
+
+    else:
+        query = query.order_by(models.Order.id)
+
+    results = query.all()
     orders_dict = {}
     for order, order_item, product in results:
         if order.id not in orders_dict:
