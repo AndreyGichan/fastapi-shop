@@ -91,6 +91,7 @@ class OrderCreate(BaseModel):
 class OrderStatusUpdate(BaseModel):
     status: str
 
+
 class OrderStatusUpdateResponse(BaseModel):
     id: int
     total_price: float
@@ -105,3 +106,26 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: str | None
+
+
+class CartItemBase(BaseModel):
+    name: str
+    price: float
+    quantity: int
+
+
+class CartItem(CartItemBase):
+    id: int
+    cart_id: int
+    product_id: int
+
+
+class CartBase(BaseModel):
+    items: list[CartItemBase]
+
+
+class Cart(BaseModel):
+    id: int
+    user_id: int
+    created_at: datetime
+    items: list[CartItem]

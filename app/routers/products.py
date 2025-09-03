@@ -125,4 +125,45 @@ def delete_product(id: int, db: Session = Depends(database.get_db), current_user
     product_query.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-    
+
+
+@router.post("/cart/", status_code=status.HTTP_201_CREATED)
+def add_to_cart(
+    product_id: int,
+    quantity: int,
+    db: Session = Depends(database.get_db),
+    current_user: schemas.User = Depends(oauth2.get_current_user),
+):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Товар с id: {product_id} не найден",
+        )
+
+    if product.quantity < quantity: # type: ignore
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Недостаточно товара на складе",
+        )
+
+    cart = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).first()
+    if not cart:
+        cart = models.Cart(user_id=current_user.id)
+        db.add(cart)
+        db.commit()
+        db.refresh(cart)
+
+    cart_item = db.query(models.CartItem).filter(
+        models.CartItem.cart_id == cart.id,
+        models.CartItem.product_id == product_id
+    ).first()
+
+    if cart_item:
+        cart_item.quantity += quantity # type: ignore
+    else:
+        cart_item = models.CartItem(cart_id=cart.id, product_id=product_id, quantity=quantity, price=product.price)
+        db.add(cart_item)
+
+    db.commit()
+    return {"message": "Товар успешно добавлен в корзину", "cart_item": cart_item}
