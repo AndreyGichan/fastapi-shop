@@ -6,33 +6,38 @@ from .. import database
 
 router = APIRouter(prefix="/cart", tags=["Cart"])
 
-@router.get("/", response_model=list[schemas.CartBase])
+@router.get("/", response_model=list[schemas.CartItemBase])
 def get_cart(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+    cart = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).first()
+
+    if not cart:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Корзина пуста"
+        )
     results = (
-        db.query(models.Cart, models.CartItem, models.Product)
-        .join(models.CartItem, models.Cart.id == models.CartItem.cart_id)
+        db.query(models.CartItem, models.Product)
         .join(models.Product, models.Product.id == models.CartItem.product_id)
-        .filter(models.Cart.user_id == current_user.id)
+        .filter(models.CartItem.cart_id == cart.id)
         .all()
     )
 
-    cart_dict = {}
-    for cart, cart_item, product in results:
-        if cart.id not in cart_dict:
-            cart_dict[cart.id] = {
-                "id": cart.id,
-                "created_at": cart.created_at,
-                "items": [],
-            }
-        cart_dict[cart.id]["items"].append(
+    if not results:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Корзина пуста"
+        )
+
+    items = []
+    for cart_item, product in results:
+        items.append(
             {
                 "name": product.name,
                 "price": cart_item.price,
                 "quantity": cart_item.quantity,
             }
         )
-    cart = list(cart_dict.values())
-    return cart
+    return items
 
 @router.delete("/{item_id}")
 def delete_cart_item(item_id: int, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
@@ -53,7 +58,24 @@ def delete_cart_item(item_id: int, db: Session = Depends(database.get_db), curre
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.put("/{item_id}")
+
+@router.delete("/")
+def clear_cart(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+    cart = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).first()
+
+    if not cart:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Корзина пуста"
+        )
+
+    db.query(models.CartItem).filter(models.CartItem.cart_id == cart.id).delete()
+    db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.put("/{item_id}", response_model=schemas.CartItemBase)
 def update_item_quantity(item_id: int, quantity: int, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
     cart_item = (
         db.query(models.CartItem)
@@ -67,7 +89,9 @@ def update_item_quantity(item_id: int, quantity: int, db: Session = Depends(data
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Товар не найден в вашей корзине",
         )
-    
+        
+    product = db.query(models.Product).filter(models.Product.id == cart_item.product_id).first()
+
     if quantity <= 0:
         db.delete(cart_item)
     else:
@@ -75,4 +99,6 @@ def update_item_quantity(item_id: int, quantity: int, db: Session = Depends(data
 
     db.commit()
 
-    return cart_item
+    updated_cart_item = schemas.CartItemBase(name=product.name,price=cart_item.price,quantity=cart_item.quantity) # type: ignore
+
+    return updated_cart_item

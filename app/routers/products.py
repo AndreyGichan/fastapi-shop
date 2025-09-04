@@ -166,4 +166,7 @@ def add_to_cart(
         db.add(cart_item)
 
     db.commit()
-    return {"message": "Товар успешно добавлен в корзину", "cart_item": cart_item}
+
+    cart_item_data = schemas.CartItemBase(name=product.name, price=cart_item.price, quantity=cart_item.quantity) # type: ignore
+    return cart_item_data
+       
