@@ -158,45 +158,52 @@ def get_my_orders(
 
 @router.post("/", response_model=schemas.OrderBase, status_code=status.HTTP_201_CREATED)
 def create_order(
-    order: schemas.OrderCreate,
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
-):
-    if not order.items:
+):  
+    cart = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).first()
+
+    if not cart:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="Список товаров пуст"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Корзина пуста"
         )
     
+    cart_items = db.query(models.CartItem).filter(models.CartItem.cart_id == cart.id).all()
+    if not cart_items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Список товаров в корзине пуст"
+        )
+
     total_price = 0
     order_items_objects = []
 
-    for item in order.items:
+    for cart_item in cart_items:
         product = (
             db.query(models.Product)
-            .filter(models.Product.id == item.product_id)
+            .filter(models.Product.id == cart_item.product_id)
             .first()
         )
         if not product:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Товар с id {item.product_id} не был найден",
+                detail=f"Товар с id {cart_item.product_id} не был найден",
             )
-        if product.quantity < item.quantity: # type: ignore
+        if product.quantity < cart_item.quantity: # type: ignore
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Недостаточно товара '{product.name}' на складе",
             )
-        total_price += product.price * item.quantity
+        total_price += product.price * cart_item.quantity
 
-        order_items_objects.append(
-            models.OrderItem(
-                product_id=item.product_id,
-                quantity=item.quantity,
-                price=product.price
-            )
+        order_item = models.OrderItem(
+            product_id=cart_item.product_id,
+            quantity=cart_item.quantity,
+            price=product.price
         )
-        product.quantity -= item.quantity  # type: ignore
+        order_items_objects.append(order_item)
+        product.quantity -= cart_item.quantity  # type: ignore
 
     new_order = models.Order(
         user_id=current_user.id,
@@ -207,12 +214,44 @@ def create_order(
     db.commit()
     db.refresh(new_order)
 
-    for order_item in new_order.items:
-        if not getattr(order_item, "product", None):
-            order_item.product = db.query(models.Product).filter(models.Product.id == order_item.product_id).first()
-        order_item.name = order_item.product.name if order_item.product else ""
-        
-    return new_order
+    order_with_items = (
+        db.query(models.Order)
+        .filter(models.Order.id == new_order.id)
+        .first()
+    )
+    order_response = {
+        "id": order_with_items.id, # type: ignore
+        "created_at": order_with_items.created_at, # type: ignore
+        "total_price": order_with_items.total_price, # type: ignore
+        "status": order_with_items.status, # type: ignore
+        "items": []
+    }
+
+    # Загружаем информацию о товарах в заказе
+    order_items_with_products = (
+        db.query(models.OrderItem, models.Product)
+        .join(models.Product, models.Product.id == models.OrderItem.product_id)
+        .filter(models.OrderItem.order_id == new_order.id)
+        .all()
+    )
+    
+    for order_item, product in order_items_with_products:
+        order_response["items"].append({
+            "name": product.name,
+            "price": order_item.price,
+            "quantity": order_item.quantity,
+        })
+
+
+    # for order_item in new_order.items:
+    #     if not getattr(order_item, "product", None):
+    #         order_item.product = db.query(models.Product).filter(models.Product.id == order_item.product_id).first()
+    #     order_item.name = order_item.product.name if order_item.product else ""
+    #     order_item.description = order_item.product.description if order_item.product else ""
+
+    db.query(models.CartItem).filter(models.CartItem.cart_id == cart.id).delete()
+    db.commit()
+    return order_response
 
 
 @router.put("/{id}", response_model=schemas.OrderStatusUpdateResponse)

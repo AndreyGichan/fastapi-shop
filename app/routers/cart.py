@@ -15,6 +15,7 @@ def get_cart(db: Session = Depends(database.get_db), current_user: schemas.User 
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Корзина пуста"
         )
+    
     results = (
         db.query(models.CartItem, models.Product)
         .join(models.Product, models.Product.id == models.CartItem.product_id)
