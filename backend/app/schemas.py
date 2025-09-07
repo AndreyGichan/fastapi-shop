@@ -38,6 +38,7 @@ class ProductBase(BaseModel):
     name: str
     description: str
     price: float
+    image_url: str | None = None
 
 
 class Product(ProductBase):
