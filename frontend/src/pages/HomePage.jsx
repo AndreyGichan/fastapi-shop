@@ -1,13 +1,25 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Header from "../components/Header"
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card"
+import { Header } from "../components/Header"
+import { HeroSection } from "../components/HeroSection";
 import ProductCard from "../components/ProductCard"
-import Button from "../components/ui/Button"
+import { Button } from "../components/ui/Button"
 import Slider from "../components/ui/Slider"
 import Checkbox from "../components/ui/Checkbox"
+import { Badge } from "../components/ui/Badge"
+import { apiFetch } from "../lib/api"
+import { useCart } from "../context/CartContext"
 
 const MAX_PRICE = 5000
+const brands = [
+    { id: "apple", label: "Apple", count: 45 },
+    { id: "samsung", label: "Samsung", count: 67 },
+    { id: "logitech", label: "Logitech", count: 89 },
+    { id: "razer", label: "Razer", count: 34 },
+    { id: "asus", label: "ASUS", count: 56 },
+]
 
 const HomePage = () => {
     const [categories, setCategories] = useState([])
@@ -18,6 +30,8 @@ const HomePage = () => {
     const [search, setSearch] = useState("")
     const [sortBy, setSortBy] = useState("")
     const [sortOrder, setSortOrder] = useState("desc")
+    const { cartItems } = useCart()
+    const cartCount = cartItems.reduce((sum, i) => sum + (i.quantity || 0), 0)
 
     const API_URL = process.env.REACT_APP_API_URL;
 
@@ -64,43 +78,91 @@ const HomePage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} />
-
+            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} />
+            <HeroSection />
 
             <div className="container mx-auto px-4 py-6">
                 <div className="flex gap-6">
                     <aside
-                        className={`w-64 bg-white border border-gray-200 rounded-lg p-6 h-fit sticky top-24 ${sidebarOpen ? "block" : "hidden md:block"}`}
+                        className={`w-64 space-y-6 h-fit sticky top-24 ${sidebarOpen ? "block" : "hidden md:block"}`}
                     >
 
-                        <h3 className="font-semibold mb-4">Фильтры</h3>
-
-                        <div className="mb-6">
-                            <h4 className="font-medium mb-3">Категории</h4>
-                            <div className="space-y-2">
+                        <Card className="gradient-card border-0 shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Категории</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
                                 {categories.map((category) => (
-                                    <div key={category} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={category}
-                                            checked={selectedCategories.includes(category)}
-                                            onCheckedChange={(checked) => handleCategoryChange(category, checked)}
-                                        />
-                                        <label htmlFor={category} className="text-sm cursor-pointer">
-                                            {category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}
-                                        </label>
+                                    <div
+                                        key={category}
+                                        className="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer"
+                                    >
+                                        <div className="flex items-center space-x-3">
+                                            <Checkbox
+                                                id={category}
+                                                checked={selectedCategories.includes(category)}
+                                                onCheckedChange={(checked) =>
+                                                    handleCategoryChange(category, checked)
+                                                }
+                                            />
+                                            <label
+                                                htmlFor={category}
+                                                className="text-sm font-medium cursor-pointer"
+                                            >
+                                                {category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}
+                                            </label>
+                                        </div>
+                                        {/* пока нет количества в API → можно убрать */}
+                                        {/* <Badge variant="outline" className="text-xs">
+                                            {Math.floor(Math.random() * 100)}
+                                        </Badge> */}
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <h4 className="font-medium mb-3">Цена</h4>
-                            <Slider value={priceRange} onValueChange={setPriceRange} max={MAX_PRICE} step={10} className="mb-2" />
-                            <div className="flex justify-between text-sm text-gray-600">
-                                <span>{priceRange[0]} р.</span>
-                                <span>{priceRange[1]} р.</span>
-                            </div>
-                        </div>
+                            </CardContent>
+                        </Card>
+                        {/* Price Range */}
+                        <Card className="gradient-card border-0 shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Цена</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <Slider
+                                    value={priceRange}
+                                    onValueChange={setPriceRange}
+                                    max={MAX_PRICE}
+                                    step={10}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-sm text-muted-foreground">
+                                    <span>{priceRange[0]} р.</span>
+                                    <span>{priceRange[1]} р.</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        {/* Brands */}
+                        <Card className="gradient-card border-0 shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Бренды</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                {brands.map((brand) => (
+                                    <div
+                                        key={brand.id}
+                                        className="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer"
+                                    >
+                                        <div className="flex items-center space-x-3">
+                                            <Checkbox id={brand.id} />
+                                            <label htmlFor={brand.name} className="text-sm font-medium cursor-pointer">
+                                                {brand.label}
+                                            </label>
+                                        </div>
+                                        <Badge variant="outline" className="text-xs">
+                                            {brand.count}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
 
                         <div className="mb-6">
                             <h4 className="font-medium mb-3">Рейтинг товара</h4>
@@ -120,9 +182,14 @@ const HomePage = () => {
 
                     <main className="flex-1">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-semibold">Рекомендуемые товары</h2>
+                            <div>
+                                <h2 className="text-3xl font-bold text-foreground">Рекомендуемые товары</h2>
+                                <p className="text-muted-foreground mt-2">Лучшие предложения для вас</p>
+                            </div>
                             <div className="flex items-center gap-4">
-                                <span className="text-sm text-gray-600">1-24 of 1,000+ results</span>
+                                <Badge variant="outline" className="text-sm">
+                                    {`1-24 из 1,000+ товаров`}
+                                </Badge>
                                 <select
                                     className="border rounded-md px-3 py-1 text-sm"
                                     value={`${sortBy}_${sortOrder}`}
@@ -156,15 +223,19 @@ const HomePage = () => {
                         </div>
 
 
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {products.map((product) => (
-                                <ProductCard key={product.id} product={product} />
+                            {products.map((product, idx) => (
+                                <ProductCard
+                                    key={product.id ?? product._id ?? `${product.name ?? 'product'}-${idx}`}
+                                    product={product}
+                                />
                             ))}
                         </div>
 
                         <div className="text-center mt-8">
                             <Button variant="outline" className="px-8 bg-transparent">
-                                Load More Products
+                                Загрузить еще товары
                             </Button>
                         </div>
                     </main>

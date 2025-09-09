@@ -35,6 +35,7 @@ class UserUpdate(BaseModel):
 
 
 class ProductBase(BaseModel):
+    id: int
     name: str
     description: str
     price: float
@@ -42,7 +43,6 @@ class ProductBase(BaseModel):
 
 
 class Product(ProductBase):
-    id: int
     quantity: int
 
 
@@ -110,13 +110,14 @@ class TokenData(BaseModel):
 
 
 class CartItemBase(BaseModel):
+    id: int
     name: str
     price: float
     quantity: int
+    image_url: str | None = None
 
 
 class CartItem(CartItemBase):
-    id: int
     cart_id: int
     product_id: int
 
@@ -130,3 +131,9 @@ class Cart(BaseModel):
     user_id: int
     created_at: datetime
     items: list[CartItem]
+
+
+class CartAdd(BaseModel):
+    product_id: int
+    quantity: int
+

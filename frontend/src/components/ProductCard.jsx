@@ -1,27 +1,54 @@
 import { Card, CardContent } from "./ui/Card"
-import Badge from "./ui/Badge"
-import Button from "./ui/Button"
+import { Badge } from "./ui/Badge"
+import { Button } from "./ui/Button"
+import { Heart, ShoppingCart, Star } from "lucide-react"
+import { apiFetch } from "../lib/api"
+import { useCart } from "../context/CartContext"
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const ProductCard = ({ product }) => {
+  const { cartItems, setCartItems } = useCart()
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
-      <svg
+      <Star
         key={i}
-        className={`w-4 h-4 ${i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
+        className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+      />
     ))
   }
 
+  const addToCart = async () => {
+    try {
+      const payload = { product_id: product.id, quantity: 1 }
+
+      const updatedItem = await apiFetch(`/products/cart`, {
+        method: 'POST',
+        body: payload
+      })
+
+      // Обновляем глобальное состояние корзины
+      const existingItem = cartItems.find(i => i.id === updatedItem.id)
+      if (existingItem) {
+        // обновляем количество
+        setCartItems(prev =>
+          prev.map(i => i.id === updatedItem.id ? updatedItem : i)
+        )
+      } else {
+        // добавляем новый элемент
+        setCartItems(prev => [...prev, updatedItem])
+      }
+    } catch (err) {
+      console.error("Ошибка добавления в корзину:", err)
+      alert(err.message || "Не удалось добавить в корзину")
+    }
+  }
+
   return (
-    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-      <CardContent className="p-4 flex flex-col h-full">
-        <div className="relative mb-3">
+    <Card className="group border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-background cursor-pointer flex flex-col h-full">
+      <CardContent className="p-4 flex flex-col flex-1">
+        {/* Верхняя часть: картинка */}
+        <div className="relative">
           <img
             src={`${API_URL}${product.image_url}` || "/placeholder.svg"}
             alt={product.name}
@@ -34,8 +61,10 @@ const ProductCard = ({ product }) => {
           )}
         </div>
 
-        {/* Заголовок */}
-        <h3 className="font-medium text-sm mb-2 line-clamp-2">{product.name}</h3>
+        {/* Название */}
+        <h3 className="font-semibold text-base mt-2">
+          {product.name}
+        </h3>
 
         {/* Нижняя часть карточки */}
         <div className="mt-auto flex flex-col gap-2">
@@ -51,12 +80,13 @@ const ProductCard = ({ product }) => {
             )}
           </div>
 
-          <Button className="w-full bg-violet-700 hover:bg-sky-800 text-black">
-            Add to Cart
+          <Button onClick={addToCart} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors">
+            <ShoppingCart className="h-4 w-4 mr-2" />В корзину
           </Button>
         </div>
       </CardContent>
     </Card>
+
   )
 }
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query, Body
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
@@ -221,13 +221,17 @@ def delete_product(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/cart/", status_code=status.HTTP_201_CREATED)
+@router.post("/cart", status_code=status.HTTP_201_CREATED)
 def add_to_cart(
-    product_id: int,
-    quantity: int,
+    payload: schemas.CartAdd = Body(...),
+    # product_id: int,
+    # quantity: int,
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
 ):
+    print(payload)
+    product_id = payload.product_id
+    quantity = payload.quantity
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:
         raise HTTPException(
@@ -268,8 +272,9 @@ def add_to_cart(
         db.add(cart_item)
 
     db.commit()
+    db.refresh(cart_item)
 
-    cart_item_data = schemas.CartItemBase(name=product.name, price=cart_item.price, quantity=cart_item.quantity)  # type: ignore
+    cart_item_data = schemas.CartItemBase(id=cart_item.id, name=product.name, price=cart_item.price, quantity=cart_item.quantity, image_url=product.image_url)  # type: ignore
     return cart_item_data
 
 

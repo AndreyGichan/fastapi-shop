@@ -58,7 +58,7 @@ const Slider = ({ value = [0, 100], onValueChange, max = 10000, step = 1, classN
         />
         <div className="absolute h-2 w-full bg-gray-300 rounded-lg"></div>
         <div
-          className="absolute h-2 bg-violet-600 rounded-lg"
+          className="absolute h-2 bg-primary rounded-lg"
           style={{
             left: `${(minVal / max) * 100}%`,
             right: `${100 - (maxVal / max) * 100}%`,
@@ -83,13 +83,14 @@ const Slider = ({ value = [0, 100], onValueChange, max = 10000, step = 1, classN
         />
       </div>
 
-      <style jsx>{`
+      <style>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: hsl(var(--primary));
+          background: var(--background); 
+          border: 2px solid var(--primary);
           cursor: pointer;
           z-index: 10;
           position: relative;
@@ -98,7 +99,8 @@ const Slider = ({ value = [0, 100], onValueChange, max = 10000, step = 1, classN
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: hsl(var(--primary));
+          background: var(--background);
+          border: 2px solid var(--primary);
           cursor: pointer;
           border: none;
           z-index: 10;
