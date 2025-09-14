@@ -16,13 +16,13 @@ export function ProfileInfo() {
   }, []);
   if (!user) return <div>Загрузка...</div>;
   return (
-    <Card>
+    <Card className="bg-background">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5 text-primary" />
           Личная информация
         </CardTitle>
-        <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+        <Button variant="outline" size="sm" className="gap-2 bg-transparent border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md">
           <Edit className="h-4 w-4" />
           Редактировать
         </Button>
@@ -46,7 +46,7 @@ export function ProfileInfo() {
               <Mail className="h-4 w-4" />
               Email
             </label>
-            <Input value={user.email || ""} readOnly />
+            <Input value={user.email || ""} className="border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" readOnly/>
           </div>
 
           <div className="space-y-2">
@@ -54,17 +54,10 @@ export function ProfileInfo() {
               <Phone className="h-4 w-4" />
               Телефон
             </label>
-            <Input value={user.phone || "Не указан"} readOnly />
+            <Input value={user.phone || "Не указан"} className="border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" readOnly/>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Адрес доставки
-          </label>
-          <Input value={user.address || "Не указан"} readOnly />
-        </div>
       </CardContent>
     </Card>
   );

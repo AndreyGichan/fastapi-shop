@@ -15,10 +15,14 @@ def get_orders(
     current_user: schemas.User = Depends(oauth2.get_current_user),
     search_by_status: str = Query("", detail="Поиск по статусу"),
     search_by_product_name: str = Query("", detail="Поиск по названию товара в заказе"),
-    max_total_price: float | None = Query(None, ge=0, detail="Фильтр по максимальной стоимости заказа"),
-    min_total_price: float | None = Query(None, ge=0, detail="Фильтр по минимальной стоимости заказа"),
+    max_total_price: float | None = Query(
+        None, ge=0, detail="Фильтр по максимальной стоимости заказа"
+    ),
+    min_total_price: float | None = Query(
+        None, ge=0, detail="Фильтр по минимальной стоимости заказа"
+    ),
     sort_by: str | None = Query(None, description="Поле для сортировки"),
-    sort_order: str = Query("desc", description="Порядок сортировки")
+    sort_order: str = Query("desc", description="Порядок сортировки"),
 ):
 
     if current_user.role != "admin":
@@ -26,18 +30,22 @@ def get_orders(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Доступ запрещен: только администраторы могут получать информацию о других заказах",
         )
-    if min_total_price is not None and max_total_price is not None and min_total_price > max_total_price:
+    if (
+        min_total_price is not None
+        and max_total_price is not None
+        and min_total_price > max_total_price
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="min_total_price не может быть больше max_total_price"
+            detail="min_total_price не может быть больше max_total_price",
         )
-    conditions= []
+    conditions = []
     if max_total_price is not None:
         conditions.append(models.Order.total_price <= max_total_price)
 
     if min_total_price is not None:
         conditions.append(models.Order.total_price >= min_total_price)
-        
+
     query = (
         db.query(models.Order, models.OrderItem, models.Product)
         .filter(models.Order.status.ilike(f"%{search_by_status}%"), *conditions)
@@ -51,11 +59,13 @@ def get_orders(
     if sort_by:
         if sort_by not in ALLOWED_SORT_FIELDS:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"Недопустимое поле сортировки: {sort_by}"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Недопустимое поле сортировки: {sort_by}",
             )
         sort_column = getattr(models.Order, sort_by)
-        query = query.order_by(asc(sort_column) if sort_order == "asc" else desc(sort_column))
+        query = query.order_by(
+            asc(sort_column) if sort_order == "asc" else desc(sort_column)
+        )
 
     else:
         query = query.order_by(models.Order.id)
@@ -71,6 +81,7 @@ def get_orders(
                 "created_at": order.created_at,
                 "total_price": order.total_price,
                 "status": order.status,
+                "address": order.address,
                 "items": [],
             }
         orders_dict[order.id]["items"].append(
@@ -95,17 +106,25 @@ def get_my_orders(
     current_user: schemas.User = Depends(oauth2.get_current_user),
     search_by_status: str = Query("", detail="Поиск по статусу"),
     search_by_product_name: str = Query("", detail="Поиск по названию товара в заказе"),
-    max_total_price: float | None = Query(None, ge=0, detail="Фильтр по максимальной стоимости заказа"),
-    min_total_price: float | None = Query(None, ge=0, detail="Фильтр по минимальной стоимости заказа"),
+    max_total_price: float | None = Query(
+        None, ge=0, detail="Фильтр по максимальной стоимости заказа"
+    ),
+    min_total_price: float | None = Query(
+        None, ge=0, detail="Фильтр по минимальной стоимости заказа"
+    ),
     sort_by: str | None = Query(None, description="Поле для сортировки"),
-    sort_order: str = Query("desc", description="Порядок сортировки")
+    sort_order: str = Query("desc", description="Порядок сортировки"),
 ):
-    if min_total_price is not None and max_total_price is not None and min_total_price > max_total_price:
+    if (
+        min_total_price is not None
+        and max_total_price is not None
+        and min_total_price > max_total_price
+    ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="min_total_price не может быть больше max_total_price"
+            detail="min_total_price не может быть больше max_total_price",
         )
-    conditions= []
+    conditions = []
     if max_total_price is not None:
         conditions.append(models.Order.total_price <= max_total_price)
 
@@ -116,20 +135,25 @@ def get_my_orders(
         db.query(models.Order, models.OrderItem, models.Product)
         .join(models.OrderItem, models.Order.id == models.OrderItem.order_id)
         .join(models.Product, models.Product.id == models.OrderItem.product_id)
-        .filter(models.Order.user_id == current_user.id, models.Order.status.ilike(f"%{search_by_status}%"), *conditions)
+        .filter(
+            models.Order.user_id == current_user.id,
+            models.Order.status.ilike(f"%{search_by_status}%"),
+            *conditions,
+        )
     )
     if search_by_product_name is not None:
         query = query.filter(models.Product.name.ilike(f"%{search_by_product_name}%"))
 
-
     if sort_by:
         if sort_by not in ALLOWED_SORT_FIELDS:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"Недопустимое поле сортировки: {sort_by}"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Недопустимое поле сортировки: {sort_by}",
             )
         sort_column = getattr(models.Order, sort_by)
-        query = query.order_by(asc(sort_column) if sort_order == "asc" else desc(sort_column))
+        query = query.order_by(
+            asc(sort_column) if sort_order == "asc" else desc(sort_column)
+        )
 
     else:
         query = query.order_by(models.Order.id)
@@ -143,6 +167,7 @@ def get_my_orders(
                 "created_at": order.created_at,
                 "total_price": order.total_price,
                 "status": order.status,
+                "address": order.address,
                 "items": [],
             }
         orders_dict[order.id]["items"].append(
@@ -158,22 +183,24 @@ def get_my_orders(
 
 @router.post("/", response_model=schemas.OrderBase, status_code=status.HTTP_201_CREATED)
 def create_order(
+    order_data: schemas.OrderCreate,
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
-):  
+):
     cart = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).first()
 
     if not cart:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Корзина пуста"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Корзина пуста"
         )
-    
-    cart_items = db.query(models.CartItem).filter(models.CartItem.cart_id == cart.id).all()
+
+    cart_items = (
+        db.query(models.CartItem).filter(models.CartItem.cart_id == cart.id).all()
+    )
     if not cart_items:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="Список товаров в корзине пуст"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Список товаров в корзине пуст",
         )
 
     total_price = 0
@@ -190,7 +217,7 @@ def create_order(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Товар с id {cart_item.product_id} не был найден",
             )
-        if product.quantity < cart_item.quantity: # type: ignore
+        if product.quantity < cart_item.quantity:  # type: ignore
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Недостаточно товара '{product.name}' на складе",
@@ -200,7 +227,7 @@ def create_order(
         order_item = models.OrderItem(
             product_id=cart_item.product_id,
             quantity=cart_item.quantity,
-            price=product.price
+            price=product.price,
         )
         order_items_objects.append(order_item)
         product.quantity -= cart_item.quantity  # type: ignore
@@ -208,23 +235,23 @@ def create_order(
     new_order = models.Order(
         user_id=current_user.id,
         total_price=total_price,
-        items=order_items_objects
+        items=order_items_objects,
+        address=order_data.address,
     )
     db.add(new_order)
     db.commit()
     db.refresh(new_order)
 
     order_with_items = (
-        db.query(models.Order)
-        .filter(models.Order.id == new_order.id)
-        .first()
+        db.query(models.Order).filter(models.Order.id == new_order.id).first()
     )
     order_response = {
-        "id": order_with_items.id, # type: ignore
-        "created_at": order_with_items.created_at, # type: ignore
-        "total_price": order_with_items.total_price, # type: ignore
-        "status": order_with_items.status, # type: ignore
-        "items": []
+        "id": order_with_items.id,  # type: ignore
+        "created_at": order_with_items.created_at,  # type: ignore
+        "total_price": order_with_items.total_price,  # type: ignore
+        "status": order_with_items.status,  # type: ignore
+        "address": order_with_items.address,  # type: ignore
+        "items": [],
     }
 
     # Загружаем информацию о товарах в заказе
@@ -234,14 +261,15 @@ def create_order(
         .filter(models.OrderItem.order_id == new_order.id)
         .all()
     )
-    
-    for order_item, product in order_items_with_products:
-        order_response["items"].append({
-            "name": product.name,
-            "price": order_item.price,
-            "quantity": order_item.quantity,
-        })
 
+    for order_item, product in order_items_with_products:
+        order_response["items"].append(
+            {
+                "name": product.name,
+                "price": order_item.price,
+                "quantity": order_item.quantity,
+            }
+        )
 
     # for order_item in new_order.items:
     #     if not getattr(order_item, "product", None):

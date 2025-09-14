@@ -18,7 +18,7 @@
   --popover: #ffffff;
   --popover-foreground: #64748b;
   /* Slate gray */
-  --primary: #4c3d7a;
+  --primary: #3b2c70;
   /* Main purple from reference */
   --primary-foreground: #ffffff;
   --secondary: #6b7280;
@@ -27,7 +27,7 @@
   --muted: #f1f5f9;
   /* Light gray for muted elements */
   --muted-foreground: #64748b;
-  --accent: #8b7cb8;
+  --accent: #6956a1;
   /* Lighter purple for accents */
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
@@ -37,7 +37,7 @@
   /* Light border */
   --input: #f8fafc;
   /* Light input background */
-  --input-bg: #ecebee;
+  --input-bg: #e9e7ee;
   --ring: hsla(248, 39%, 39%, 0.5);
   /* Purple ring with opacity */
   --chart-1: #3b82f6;
@@ -170,6 +170,9 @@
   .gradient-primary {
     background: linear-gradient(135deg, oklch(0.35 0.08 280) 0%, oklch(0.15 0.02 280) 100%);
   }
+  .gradient-header {
+   background: linear-gradient(135deg, #3b2c70 0%, #5a46a3 100%);
+}
 
   .gradient-card {
     background: linear-gradient(145deg, oklch(0.98 0.01 280) 0%, oklch(1 0 0) 100%);

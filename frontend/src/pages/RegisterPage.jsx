@@ -6,12 +6,12 @@ import { Link } from "react-router-dom";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-100">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-20 py-4">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-2">
           <Link to="/">
             <Button
               variant="ghost"

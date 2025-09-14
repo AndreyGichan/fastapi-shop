@@ -17,7 +17,7 @@ export function CartEmpty() {
         </p>
 
         <Link to="/">
-          <Button size="lg" className="gap-2">
+          <Button size="lg" className="gap-2 hover:bg-[var(--accent)]">
             <ShoppingCart className="h-4 w-4" />
             Перейти к покупкам
           </Button>

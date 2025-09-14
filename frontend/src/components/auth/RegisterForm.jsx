@@ -30,7 +30,7 @@ export function RegisterForm() {
     };
 
     return (
-        <Card className="w-full">
+        <Card className="w-full bg-background">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">Регистрация</CardTitle>
                 <p className="text-muted-foreground">Создайте аккаунт в TechStore</p>
@@ -40,7 +40,7 @@ export function RegisterForm() {
                     {/* Имя и Фамилия */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label htmlFor="firstName" className="text-sm font-medium">
+                            <label htmlFor="firstName" className="text-sm font-medium px-4">
                                 Имя
                             </label>
                             <div className="relative">
@@ -51,14 +51,14 @@ export function RegisterForm() {
                                     placeholder="Иван"
                                     value={formData.firstName}
                                     onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                    className="pl-10"
+                                    className="pl-10 border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
                                     required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="lastName" className="text-sm font-medium">
+                            <label htmlFor="lastName" className="text-sm font-medium px-4">
                                 Фамилия
                             </label>
                             <div className="relative">
@@ -69,16 +69,16 @@ export function RegisterForm() {
                                     placeholder="Иванов"
                                     value={formData.lastName}
                                     onChange={(e) => handleInputChange("lastName", e.target.value)}
-                                    className="pl-10"
-                                    required
+                                    className="pl-10 border border-gray-100 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
                                 />
                             </div>
+                            <p className="text-xs text-muted-foreground italic px-4">* это поле необязательно</p>
                         </div>
                     </div>
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">
+                        <label htmlFor="email" className="text-sm font-medium px-4">
                             Email
                         </label>
                         <div className="relative">
@@ -89,34 +89,16 @@ export function RegisterForm() {
                                 placeholder="your@email.com"
                                 value={formData.email}
                                 onChange={(e) => handleInputChange("email", e.target.value)}
-                                className="pl-10"
+                                className="pl-10 border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
                                 required
                             />
                         </div>
                     </div>
 
-                    {/* Телефон */}
-                    <div className="space-y-2">
-                        <label htmlFor="phone" className="text-sm font-medium">
-                            Телефон
-                        </label>
-                        <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                id="phone"
-                                type="tel"
-                                placeholder="+7 (999) 123-45-67"
-                                value={formData.phone}
-                                onChange={(e) => handleInputChange("phone", e.target.value)}
-                                className="pl-10"
-                                required
-                            />
-                        </div>
-                    </div>
 
                     {/* Пароль */}
                     <div className="space-y-2">
-                        <label htmlFor="password" className="text-sm font-medium">
+                        <label htmlFor="password" className="text-sm font-medium px-4">
                             Пароль
                         </label>
                         <div className="relative">
@@ -127,7 +109,7 @@ export function RegisterForm() {
                                 placeholder="Минимум 8 символов"
                                 value={formData.password}
                                 onChange={(e) => handleInputChange("password", e.target.value)}
-                                className="pl-10 pr-10"
+                                className="pl-10 pr-10 border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
                                 required
                                 minLength={8}
                             />
@@ -149,7 +131,7 @@ export function RegisterForm() {
 
                     {/* Подтверждение пароля */}
                     <div className="space-y-2">
-                        <label htmlFor="confirmPassword" className="text-sm font-medium">
+                        <label htmlFor="confirmPassword" className="text-sm font-medium px-4">
                             Подтвердите пароль
                         </label>
                         <div className="relative">
@@ -160,7 +142,7 @@ export function RegisterForm() {
                                 placeholder="Повторите пароль"
                                 value={formData.confirmPassword}
                                 onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                                className="pl-10 pr-10"
+                                className="pl-10 pr-10 border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
                                 required
                             />
                             <Button
@@ -232,7 +214,7 @@ export function RegisterForm() {
 
                 {/* Соцсети */}
                 <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" className="w-full bg-transparent">
+                    <Button variant="outline" className="w-full bg-transparent border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md">
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                             <path
                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -253,7 +235,7 @@ export function RegisterForm() {
                         </svg>
                         Google
                     </Button>
-                    <Button variant="outline" className="w-full bg-transparent">
+                    <Button variant="outline" className="w-full bg-transparent border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md">
                         <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                         </svg>

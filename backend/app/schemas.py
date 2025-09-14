@@ -5,6 +5,7 @@ from datetime import datetime
 class User(BaseModel):
     id: int
     username: str
+    last_name: str | None = None
     email: str
     password: str
     role: str
@@ -12,6 +13,7 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     username: str
+    last_name: str | None = None
     email: str
     password: str
 
@@ -24,12 +26,14 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
+    last_name: str | None = None
     email: str
     role: str
 
 
 class UserUpdate(BaseModel):
     username: str
+    last_name: str | None = None
     email: str
     role: str
 
@@ -44,10 +48,12 @@ class ProductBase(BaseModel):
 
 class Product(ProductBase):
     quantity: int
+    category: str
 
 
 class ProductCreate(ProductBase):
     quantity: int
+    category: str
 
 
 class OrderItemBase(BaseModel):
@@ -73,6 +79,7 @@ class OrderBase(BaseModel):
     total_price: float
     created_at: datetime
     status: str
+    address: str
     items: list[OrderItemBase]
 
 
@@ -81,12 +88,14 @@ class Order(BaseModel):
     total_price: float
     created_at: datetime
     status: str
+    address: str
     user_id: int
     items: list[OrderItem]
 
 
 class OrderCreate(BaseModel):
-    items: list[OrderItemCreate]
+    address: str
+    # items: list[OrderItemCreate]
 
 
 class OrderStatusUpdate(BaseModel):
@@ -136,4 +145,3 @@ class Cart(BaseModel):
 class CartAdd(BaseModel):
     product_id: int
     quantity: int
-

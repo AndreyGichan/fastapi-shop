@@ -8,10 +8,12 @@ import { ArrowLeft, Trash2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { clearCart } from "../lib/api"
 import { useCart } from "../context/CartContext"
+import { useAuth } from "../context/AuthContext";
 
 export default function CartPage() {
-    const { cartItems, setCartItems } = useCart() // берём корзину из контекста
+    const { cartItems, setCartItems } = useCart()
     const isEmpty = cartItems.length === 0
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         // Здесь можно при необходимости подгружать корзину с сервера,
@@ -26,15 +28,14 @@ export default function CartPage() {
 
         try {
             await clearCart()
-            setCartItems([]) // обновляем состояние корзины в контексте
+            setCartItems([])
         } catch (err) {
             console.error("Ошибка при очистке корзины:", err)
         }
     }
-    console.log(cartItems)
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-100">
             <Header />
 
             <main className="container mx-auto px-4 py-8">
@@ -65,10 +66,45 @@ export default function CartPage() {
                         )}
                     </div>
 
-                    <h1 className="text-3xl font-bold mb-6 w-full">Корзина</h1>
+                    <h1 className="text-3xl font-bold mb-6 w-full px-6">Корзина</h1>
                     <div className="grid lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
-                            {cartItems.length === 0 ? (
+
+                            {/* Неавторизованный пользователь */}
+                            {!isAuthenticated && (
+                                <div className="flex flex-col items-center justify-center py-20 text-center">
+                                    <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                        Войдите, чтобы продолжить
+                                    </h2>
+                                    <p className="text-muted-foreground mb-8 max-w-md text-lg">
+                                        Чтобы просматривать корзину и оформлять заказы, необходимо авторизоваться в системе
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                                        <Link to="/login">
+                                            <Button
+                                                size="lg"
+                                                className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                                            >
+                                                Войти в аккаунт
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+
+                            )}
+
+                            {/* Пустая корзина у авторизованного пользователя */}
+                            {isAuthenticated && isEmpty && <CartEmpty />}
+
+                            {/* Содержимое корзины */}
+                            {isAuthenticated && !isEmpty && (
+                                <div className="space-y-4">
+                                    {cartItems.map((item) => (
+                                        <CartItem key={item.id} item={item} setItems={setCartItems} />
+                                    ))}
+                                </div>
+                            )}
+                            {/* {cartItems.length === 0 ? (
                                 <CartEmpty />
                             ) : (
                                 <div className="space-y-4">
@@ -81,10 +117,10 @@ export default function CartPage() {
                                     ))}
 
                                 </div>
-                            )}
+                            )} */}
                         </div>
 
-                        {!isEmpty && (
+                        {isAuthenticated && !isEmpty && (
                             <div className="lg:col-span-1">
                                 <CartSummary items={cartItems} />
                             </div>

@@ -3,22 +3,22 @@ import { Button } from "../ui/Button";
 import { Separator } from "../ui/Separator";
 import { Settings, Bell, Shield, CreditCard, LogOut, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export function ProfileSettings() {
     const navigate = useNavigate();
+    const { setIsAuthenticated } = useAuth(); 
 
     const handleLogout = () => {
-        // Очистка данных авторизации
-        localStorage.removeItem("token"); // или ключ, где хранится информация о пользователе
-        // Можно очистить все: localStorage.clear();
-
-        // Перенаправление на страницу входа
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");  
+        setIsAuthenticated(false);
         navigate("/login");
     };
     return (
         <div className="space-y-6">
             {/* Account Stats */}
-            <Card>
+            <Card className="bg-background">
                 <CardHeader>
                     <CardTitle className="text-lg">Статистика</CardTitle>
                 </CardHeader>
@@ -30,18 +30,13 @@ export function ProfileSettings() {
                     <Separator />
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Потрачено</span>
-                        <span className="font-semibold">89 450 ₽</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Бонусы</span>
-                        <span className="font-semibold text-primary">1 247 ₽</span>
+                        <span className="font-semibold">89 450 р.</span>
                     </div>
                 </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <Card>
+            <Card className="bg-background">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Settings className="h-5 w-5 text-primary" />

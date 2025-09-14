@@ -3,9 +3,9 @@ import { ArrowRight, Zap, Shield, Truck } from "lucide-react"
 
 export function HeroSection() {
     return (
-        <section className="relative overflow-hidden bg-background bg-gray-50">
+        <section className="relative overflow-hidden bg-background bg-gray-100">
             <div className="absolute inset-0 tech-grid opacity-5 "></div>
-            <div className="container mx-auto px-4 py-20 relative z-10">
+            <div className="container mx-auto px-20 py-20 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     <div className="space-y-10">
                         <div className="space-y-6">

@@ -5,12 +5,14 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
-export function Header({ sidebarOpen, setSidebarOpen, search, setSearch }) {
-  const isLoggedIn = !!localStorage.getItem("token");
+export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSearch = false }) {
+  const { isAuthenticated, loading } = useAuth();
   const { cartCount } = useCart();
+  if (loading) return null;
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b-2 border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -22,17 +24,19 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch }) {
           </Link>
 
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-12">
-            <div className="relative w-full">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input
-                placeholder="Поиск товаров..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-12 py-3 bg-[var(--input-bg)] border-border focus:border-primary transition-all duration-200 rounded-xl text-base"
-              />
+          {showSearch && (
+            <div className="hidden md:flex flex-1 max-w-lg mx-12">
+              <div className="relative w-full">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                <Input
+                  placeholder="Поиск товаров..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-12 py-3 bg-[var(--input-bg)] border-border focus:border-primary transition-all duration-200 rounded-xl text-base"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center space-x-2">
@@ -51,18 +55,20 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch }) {
                 <span className="sr-only">Корзина</span>
               </Button>
             </Link>
-            <Link to="/profile">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-11 w-11 text-foreground hover:bg-[var(--input-bg)] hover:text-primary transition-colors rounded-xl"
-              >
-                <User className="h-5 w-5" />
-                <span className="sr-only">Профиль</span>
-              </Button>
-            </Link>
+            {isAuthenticated && (
+              <Link to="/profile">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-11 w-11 text-foreground hover:bg-[var(--input-bg)] hover:text-primary transition-colors rounded-xl"
+                >
+                  <User className="h-5 w-5" />
+                  <span className="sr-only">Профиль</span>
+                </Button>
+              </Link>
+            )}
 
-            {!isLoggedIn && (
+            {!isAuthenticated && (
               <Link to="/login">
                 <Button variant="ghost"
                   className="text-foreground hover:bg-[var(--input-bg)] hover:text-primary transition-colors rounded-xl"

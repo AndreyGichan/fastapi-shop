@@ -1,43 +1,72 @@
-// src/lib/api.js
 const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 export async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('token'); // или где ты хранишь токен
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(options.headers || {}),
-  };
-  if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
-    headers['Content-Type'] = 'application/json';
-    options.body = JSON.stringify(options.body);
-  }
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const token = localStorage.getItem('token');
+  // const headers = {
+  //   'Content-Type': 'application/json',
+  //   ...(options.headers || {}),
+  // };
+
+  // if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+  //   headers['Content-Type'] = 'application/json';
+  //   options.body = JSON.stringify(options.body);
+  // }
+  // if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  // const res = await fetch(`${API_URL}${path}`, {
+  //   ...options,
+  //   headers,
+  // });
+
+  const headers = options.body instanceof FormData
+    ? { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+    : {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    };
 
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
+    body: options.body instanceof FormData
+      ? options.body
+      : options.body
+        ? JSON.stringify(options.body)
+        : undefined,
   });
+
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    // window.location.href = "/login";
+    throw new Error("Unauthorized");
+  }
 
   if (!res.ok) {
     const text = await res.text();
     console.error("Ошибка ответа сервера:", text);
     let json = null;
-    try { json = JSON.parse(text); } catch(e) { }
+    try { json = JSON.parse(text); } catch (e) { }
     const err = json?.detail || text || res.statusText;
     const error = new Error(err);
     error.status = res.status;
     throw error;
   }
 
-  // если 204 No Content
   if (res.status === 204) return null;
   return res.json();
 
-  
 }
 
 export async function getCart() {
   return apiFetch('/cart');
+}
+
+export async function addToCart(productId, quantity = 1) {
+  return apiFetch('/products/cart', {
+    method: 'POST',
+    body: { product_id: productId, quantity },
+  });
 }
 
 export async function deleteCartItem(itemId) {
@@ -72,6 +101,69 @@ export async function getUsers() {
   return apiFetch('/users');
 }
 
+export async function getUsersStats() {
+  return apiFetch('/users/stats');
+}
+
+
+export async function getProducts() {
+  return apiFetch('/products');
+}
+
+export async function getProductsForAdmin() {
+  return apiFetch('/products/admin');
+}
+
+export async function getProduct(id) {
+  return apiFetch(`/products/${id}`);
+}
+
+export async function createProduct(data) {
+  return apiFetch('/products', {
+    method: 'POST',
+    body: data,
+  });
+}
+
+export async function updateProduct(id, data) {
+  return apiFetch(`/products/${id}`, {
+    method: 'PUT',
+    body: data,
+  });
+}
+
+export async function deleteProduct(id) {
+  return apiFetch(`/products/${id}`, { method: 'DELETE' });
+}
+
+
+export async function getUserOrders() {
+  return apiFetch('/orders/my_orders');
+}
+
+export async function get_orders() {
+  return apiFetch('orders/get_orders')
+}
+
+export async function update_oreder_status(id) {
+  return apiFetch(`/orders/${id}`, { method: 'PUT' })
+}
+
+export async function getUsersForAdmin() {
+  return apiFetch('/users');
+}
+
+export async function getUserById(id) {
+  return apiFetch(`/users/${id}`);
+}
+
+export async function createUserByAdmin(data) {
+  return apiFetch('/users/create_user', {
+    method: 'POST',
+    body: data,
+  });
+}
+
 export async function updateUserByAdmin(id, data) {
   return apiFetch(`/users/${id}`, {
     method: 'PUT',
@@ -79,7 +171,28 @@ export async function updateUserByAdmin(id, data) {
   });
 }
 
-// Для админа: удалить пользователя
 export async function deleteUserByAdmin(id) {
   return apiFetch(`/users/${id}`, { method: 'DELETE' });
 }
+
+export async function getOrdersForAdmin(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return apiFetch(`/orders?${query}`);
+}
+
+export async function getMyOrders(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return apiFetch(`/orders/my_orders?${query}`);
+}
+
+export async function updateOrderStatus(orderId, data) {
+  return apiFetch(`/orders/${orderId}`, {
+    method: "PUT",
+    body: data,
+  });
+}
+
+export async function createOrder() {
+  return apiFetch("/orders", { method: "POST" });
+}
+

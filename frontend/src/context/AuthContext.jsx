@@ -1,89 +1,58 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../lib/api';
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+export function AuthProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setLoading(false);
+      return;
     }
-    return context;
-};
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [token, setToken] = useState(localStorage.getItem('access_token'));
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-    useEffect(() => {
-        const initAuth = async () => {
-            const token = localStorage.getItem('access_token');
-            const userData = localStorage.getItem('user');
-
-            if (token && userData) {
-                setToken(token);
-                setUser(JSON.parse(userData));
-            }
-            setLoading(false);
-        };
-
-        initAuth();
-    }, []);
-
-    const login = async (email, password) => {
-        try {
-            const data = await authAPI.login(email, password);
-
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('user', JSON.stringify({ email }));
-
-            setToken(data.access_token);
-            setUser({ email });
-
-            return { success: true };
-        } catch (error) {
-            return { success: false, error: error.message };
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          setUserRole(null);
+        } else if (!res.ok) {
+          console.error("Ошибка при проверке токена:", res.statusText);
+          setIsAuthenticated(false);
+          setUserRole(null);
+        } else {
+          const data = await res.json();
+          setIsAuthenticated(true);
+          setUserRole(data.role || null);
         }
+      } catch (err) {
+        console.error("Ошибка проверки токена:", err);
+        setIsAuthenticated(false);
+        setUserRole(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const register = async (userData) => {
-        try {
-            const newUser = await authAPI.register(userData);
+    checkAuth();
+  }, []);
 
-            // Автоматически логиним после регистрации
-            const loginResult = await login(userData.email, userData.password);
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, userRole, setUserRole, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
-            if (!loginResult.success) {
-                return loginResult;
-            }
-
-            return { success: true, user: newUser };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        setToken(null);
-        setUser(null);
-    };
-
-    const value = {
-        user,
-        token,
-        login,
-        register,
-        logout,
-        loading,
-        isAuthenticated: !!token,
-    };
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
+export const useAuth = () => useContext(AuthContext);

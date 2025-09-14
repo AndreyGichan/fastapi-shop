@@ -1,11 +1,17 @@
 import { Button } from "../ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card"
 import { Separator } from "../ui/Separator"
+import { useNavigate } from "react-router-dom"
 
 export function CartSummary({ items }) {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = subtotal > 1000 ? 0 : 20
   const total = subtotal + shipping
+  const navigate = useNavigate()
+
+  const handleCheckout = () => {
+    navigate("/checkout")
+  }
 
   return (
     <Card className="sticky top-24 bg-background">
@@ -35,7 +41,7 @@ export function CartSummary({ items }) {
 
         {shipping === 0 && <p className="text-sm text-green-600">🎉 Бесплатная доставка при заказе от 1000 р.</p>}
 
-        <Button className="w-full" size="lg">
+        <Button className="w-full" size="lg" onClick={handleCheckout}>
           Оформить заказ
         </Button>
 

@@ -77,11 +77,11 @@ const HomePage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} />
+        <div className="min-h-screen bg-gray-100">
+            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} showSearch={true}/>
             <HeroSection />
 
-            <div className="container mx-auto px-4 py-6">
+            <div className="container mx-auto px-20 py-6">
                 <div className="flex gap-6">
                     <aside
                         className={`w-64 space-y-6 h-fit sticky top-24 ${sidebarOpen ? "block" : "hidden md:block"}`}

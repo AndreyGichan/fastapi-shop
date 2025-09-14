@@ -8,7 +8,9 @@ import { useCart } from "../context/CartContext"
 const API_URL = process.env.REACT_APP_API_URL;
 
 const ProductCard = ({ product }) => {
-  const { cartItems, setCartItems } = useCart()
+  //const { cartItems, setCartItems } = useCart()
+  const { addToCart } = useCart();
+
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
       <Star
@@ -18,31 +20,31 @@ const ProductCard = ({ product }) => {
     ))
   }
 
-  const addToCart = async () => {
-    try {
-      const payload = { product_id: product.id, quantity: 1 }
+  // const addToCart = async () => {
+  //   try {
+  //     const payload = { product_id: product.id, quantity: 1 }
 
-      const updatedItem = await apiFetch(`/products/cart`, {
-        method: 'POST',
-        body: payload
-      })
+  //     const updatedItem = await apiFetch(`/products/cart`, {
+  //       method: 'POST',
+  //       body: payload
+  //     })
 
-      // Обновляем глобальное состояние корзины
-      const existingItem = cartItems.find(i => i.id === updatedItem.id)
-      if (existingItem) {
-        // обновляем количество
-        setCartItems(prev =>
-          prev.map(i => i.id === updatedItem.id ? updatedItem : i)
-        )
-      } else {
-        // добавляем новый элемент
-        setCartItems(prev => [...prev, updatedItem])
-      }
-    } catch (err) {
-      console.error("Ошибка добавления в корзину:", err)
-      alert(err.message || "Не удалось добавить в корзину")
-    }
-  }
+  //     // Обновляем глобальное состояние корзины
+  //     const existingItem = cartItems.find(i => i.id === updatedItem.id)
+  //     if (existingItem) {
+  //       // обновляем количество
+  //       setCartItems(prev =>
+  //         prev.map(i => i.id === updatedItem.id ? updatedItem : i)
+  //       )
+  //     } else {
+  //       // добавляем новый элемент
+  //       setCartItems(prev => [...prev, updatedItem])
+  //     }
+  //   } catch (err) {
+  //     console.error("Ошибка добавления в корзину:", err)
+  //     alert(err.message || "Не удалось добавить в корзину")
+  //   }
+  // }
 
   return (
     <Card className="group border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-background cursor-pointer flex flex-col h-full">
@@ -80,7 +82,7 @@ const ProductCard = ({ product }) => {
             )}
           </div>
 
-          <Button onClick={addToCart} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors">
+          <Button onClick={() => addToCart(product.id)} className="w-full bg-primary hover:bg-[var(--accent)] text-primary-foreground transition-colors">
             <ShoppingCart className="h-4 w-4 mr-2" />В корзину
           </Button>
         </div>

@@ -10,6 +10,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     username = Column(String, nullable=False)
+    last_name = Column(String, nullable=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     role = Column(String, nullable=False, default="user")
@@ -43,7 +44,8 @@ class Order(Base):
     created_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
     )
-    status = Column(String, default="в ожидании")
+    status = Column(String, default="в обработке")
+    address = Column(String, nullable=False)
 
     user = relationship("User")
     items = relationship("OrderItem", back_populates="order")
