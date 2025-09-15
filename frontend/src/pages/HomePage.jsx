@@ -78,7 +78,7 @@ const HomePage = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} showSearch={true}/>
+            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} showSearch={true} />
             <HeroSection />
 
             <div className="container mx-auto px-20 py-6">
@@ -164,7 +164,7 @@ const HomePage = () => {
                             </CardContent>
                         </Card>
 
-                        <div className="mb-6">
+                        {/* <div className="mb-6">
                             <h4 className="font-medium mb-3">Рейтинг товара</h4>
                             <div className="space-y-2">
                                 {[4, 3, 2, 1].map((rating) => (
@@ -177,7 +177,7 @@ const HomePage = () => {
                                     </div>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
                     </aside>
 
                     <main className="flex-1">

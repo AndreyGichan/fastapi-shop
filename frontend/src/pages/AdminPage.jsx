@@ -20,7 +20,7 @@ export default function AdminPage() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="relative overflow-hidden rounded-2xl gradient-header from-slate-900 via-purple-900 to-slate-900 p-4 mb-6">
+            <div className="relative overflow-hidden rounded-lg gradient-header from-slate-900 via-purple-900 to-slate-900 p-4 mb-6">
               {/* Gradient overlay */}
               <div className="relative flex items-center gap-4">
                 <div className="flex-1">

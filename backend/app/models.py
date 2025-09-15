@@ -16,6 +16,7 @@ class User(Base):
     role = Column(String, nullable=False, default="user")
 
     cart = relationship("Cart", back_populates="user", uselist=False)
+    reviews = relationship("ProductReview", back_populates="user")
 
 
 class Product(Base):
@@ -25,12 +26,15 @@ class Product(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     price = Column(Float, nullable=False)
+    original_price = Column(Float, nullable=True)
+    discount = Column(Float, nullable=True)
     quantity = Column(Integer)
     category = Column(String, nullable=False)
     image_url = Column(String, nullable=False)
 
     order_items = relationship("OrderItem", back_populates="product")
     cart_items = relationship("CartItem", back_populates="product")
+    reviews = relationship("ProductReview", back_populates="product")
 
 
 class Order(Base):
@@ -94,3 +98,22 @@ class CartItem(Base):
 
     cart = relationship("Cart", back_populates="items")
     product = relationship("Product")
+
+
+class ProductReview(Base):
+    __tablename__ = "product_reviews"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    product_id = Column(
+        Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    rating = Column(Integer, nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
+    )
+
+    product = relationship("Product", back_populates="reviews")
+    user = relationship("User", back_populates="reviews")

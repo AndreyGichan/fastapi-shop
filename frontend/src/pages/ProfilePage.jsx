@@ -26,10 +26,10 @@ export default function ProfilePage() {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Profile Info */}
                     <div className="lg:col-span-2">
-                        <div className="relative overflow-hidden rounded-2xl gradient-header from-slate-900 via-purple-900 to-slate-900 p-4 mb-6">
+                        <div className="relative overflow-hidden rounded-lg gradient-header from-slate-900 via-purple-900 to-slate-900 p-4 mb-7">
                             <div className="relative flex items-center gap-4">
                                 <div className="flex-1">
-                                    <h1 className="text-2xl font-bold text-white mb-2 tracking-tight px-4">Профиль</h1>
+                                    <h1 className="text-2xl font-bold text-white mb-2 tracking-tight px-6">Профиль</h1>
                                 </div>
                             </div>
                         </div>

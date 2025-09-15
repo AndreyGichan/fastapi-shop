@@ -117,9 +117,9 @@ def create_user(
     return new_user
 
 
-@router.put("/me", response_model=schemas.UserCreate)
+@router.put("/me", response_model=schemas.UserUpdateProfile)
 def update_user_profile(
-    updated_user: schemas.UserCreate,
+    updated_user: schemas.UserUpdateProfile,
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
 ):
@@ -132,20 +132,39 @@ def update_user_profile(
             detail=f"Пользователь с id: {current_user.id} не был найден",
         )
 
-    user_query.update(
-        {
-            models.User.username.name: updated_user.username,
-            models.User.last_name.name: updated_user.last_name,
-            models.User.email.name: updated_user.email,
-            models.User.password.name: (
-                utils.hash(updated_user.password) if updated_user.password else None
-            ),
-        },
-        synchronize_session=False,
-    )
+    update_data = {
+        models.User.username.name: updated_user.username,
+        models.User.last_name.name: updated_user.last_name,
+        models.User.email.name: updated_user.email,
+    }
 
+    if updated_user.password:
+        update_data[models.User.password.name] = utils.hash(updated_user.password)
+
+    user_query.update(update_data, synchronize_session=False)  # type: ignore
     db.commit()
     return user
+
+
+@router.put("/me/password")
+def change_password(
+    passwords: schemas.PasswordChange,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
+    user = db.query(models.User).filter(models.User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    # Проверяем текущий пароль
+    if not utils.verify(passwords.current_password, user.password):
+        raise HTTPException(status_code=400, detail="Текущий пароль неверный")
+
+    # Обновляем пароль
+    user.password = utils.hash(passwords.new_password) # type: ignore
+    db.commit()
+
+    return {"message": "Пароль успешно изменен"}
 
 
 @router.put("/{id}", response_model=schemas.UserOut)

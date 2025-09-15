@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 from datetime import datetime
 
 
@@ -38,11 +38,27 @@ class UserUpdate(BaseModel):
     role: str
 
 
+class UserUpdateProfile(BaseModel):
+    username: str
+    last_name: str | None = None
+    email: str
+    password: str | None = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class ProductBase(BaseModel):
     id: int
     name: str
     description: str
     price: float
+    original_price: float | None = None
+    discount: float | None = None
+    original_price: float | None = None
+    discount: float | None = None
     image_url: str | None = None
 
 
@@ -56,10 +72,18 @@ class ProductCreate(ProductBase):
     category: str
 
 
+class ProductWithRating(ProductBase):
+    average_rating: float | None = None
+    reviews_count: int | None = None
+
+
 class OrderItemBase(BaseModel):
+    product_id: int
+    id: int
     name: str
     price: float
     quantity: int
+    image_url: str | None = None
 
 
 class OrderItem(OrderItemBase):
@@ -107,6 +131,18 @@ class OrderStatusUpdateResponse(BaseModel):
     total_price: float
     created_at: datetime
     status: str
+
+
+class ReviewCreate(BaseModel):
+    rating: conint(ge=1, le=5)  # type: ignore
+
+
+class ReviewResponse(BaseModel):
+    id: int
+    product_id: int
+    user_id: int
+    rating: int
+    created_at: datetime
 
 
 class Token(BaseModel):

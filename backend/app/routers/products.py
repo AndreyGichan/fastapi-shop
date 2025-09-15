@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Query, Body
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
 from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
 from .. import database
@@ -13,7 +13,7 @@ ALLOWED_SORT_FIELDS = {"price", "name", "quantity"}
 router = APIRouter(prefix="/products", tags=["Products"])
 
 
-@router.get("/", response_model=list[schemas.ProductBase])
+@router.get("/", response_model=list[schemas.ProductWithRating])
 def get_products(
     db: Session = Depends(database.get_db),
     search: str = Query("", description="Поиск по названию"),
@@ -44,8 +44,23 @@ def get_products(
     if categories:
         conditions.append(models.Product.category.in_(categories))
 
-    query = db.query(models.Product).filter(
-        models.Product.name.ilike(f"%{search}%"), *conditions
+    # query = db.query(models.Product).filter(
+    #     models.Product.name.ilike(f"%{search}%"), *conditions
+    # )
+
+    query = (
+        db.query(
+            models.Product,
+            func.coalesce(func.avg(models.ProductReview.rating), 0).label(
+                "average_rating"
+            ),
+            func.count(models.ProductReview.id).label("reviews_count"),
+        )
+        .outerjoin(
+            models.ProductReview, models.Product.id == models.ProductReview.product_id
+        )
+        .filter(models.Product.name.ilike(f"%{search}%"), *conditions)
+        .group_by(models.Product.id)
     )
 
     if sort_by:
@@ -54,7 +69,11 @@ def get_products(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Недопустимое поле сортировки: {sort_by}",
             )
-        sort_column = getattr(models.Product, sort_by)
+        sort_column = (
+            sort_by
+            if sort_by in {"average_rating", "reviews_count"}
+            else getattr(models.Product, sort_by)
+        )
         query = query.order_by(
             asc(sort_column) if sort_order == "asc" else desc(sort_column)
         )
@@ -63,7 +82,19 @@ def get_products(
         query = query.order_by(models.Product.id)
 
     products = query.all()
-    return products
+
+    result = []
+    for product, avg_rating, reviews_count in products:
+        result.append(
+            {
+                **product.__dict__,
+                "average_rating": round(avg_rating, 2),
+                "reviews_count": reviews_count,
+            }
+        )
+
+    # return products
+    return result
 
 
 @router.get("/admin", response_model=list[schemas.Product])
@@ -128,14 +159,32 @@ def get_products_for_admin(
 
 @router.get("/{id}", response_model=schemas.ProductBase)
 def get_product(id: int, db: Session = Depends(database.get_db)):
-    product = db.query(models.Product).filter(models.Product.id == id).first()
+    # product = db.query(models.Product).filter(models.Product.id == id).first()
 
-    if not product:
+    product_with_rating = (
+        db.query(
+            models.Product,
+            func.coalesce(func.avg(models.ProductReview.rating), 0).label(
+                "average_rating"
+            ),
+        )
+        .outerjoin(
+            models.ProductReview, models.Product.id == models.ProductReview.product_id
+        )
+        .filter(models.Product.id == id)
+        .group_by(models.Product.id)
+        .first()
+    )
+
+    if not product_with_rating:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Товар с id: {id} не был найден",
         )
-    return product
+
+    product, avg_rating = product_with_rating
+    return {**product.__dict__, "average_rating": round(avg_rating, 2)}
+    # return product
 
 
 @router.post("/", response_model=schemas.Product, status_code=status.HTTP_201_CREATED)
@@ -143,6 +192,8 @@ def create_product(
     name: str = Form(...),
     description: str = Form(None),
     price: float = Form(...),
+    original_price: float | None = Form(None),
+    discount: float | None = Form(None),
     quantity: int = Form(...),
     category: str = Form(...),
     image: UploadFile = File(...),
@@ -182,6 +233,8 @@ def create_product(
         name=name,
         description=description,
         price=price,
+        original_price=original_price,
+        discount=discount,
         quantity=quantity,
         category=category,
         image_url=image_url,
@@ -199,6 +252,8 @@ def update_product(
     name: str = Form(...),
     description: str = Form(None),
     price: float = Form(...),
+    original_price: float | None = Form(None),
+    discount: float | None = Form(None),
     quantity: int = Form(...),
     category: str = Form(...),
     image: UploadFile | None = File(None),
@@ -223,6 +278,8 @@ def update_product(
         "name": name,
         "description": description,
         "price": price,
+        "original_price": original_price,
+        "discount": discount,
         "quantity": quantity,
         "category": category,
     }
@@ -340,3 +397,68 @@ def add_to_cart(
 def get_categories(db: Session = Depends(database.get_db)):
     categories = db.query(models.Product.category).distinct().all()
     return [c[0] for c in categories]
+
+
+@router.post(
+    "/{product_id}/review",
+    response_model=schemas.ReviewResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_review(
+    product_id: int,
+    review: schemas.ReviewCreate,
+    db: Session = Depends(database.get_db),
+    current_user: schemas.User = Depends(oauth2.get_current_user),
+):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Товар с id={product_id} не найден",
+        )
+
+    existing_review = (
+        db.query(models.ProductReview)
+        .filter(
+            models.ProductReview.product_id == product_id,
+            models.ProductReview.user_id == current_user.id,
+        )
+        .first()
+    )
+    if existing_review:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Вы уже оставляли отзыв для этого товара",
+        )
+
+    new_review = models.ProductReview(
+        product_id=product_id,
+        user_id=current_user.id,
+        rating=review.rating,
+    )
+    db.add(new_review)
+    db.commit()
+    db.refresh(new_review)
+
+    return new_review
+
+
+@router.get("/{product_id}/reviews", response_model=list[schemas.ReviewResponse])
+def get_reviews_for_product(
+    product_id: int,
+    db: Session = Depends(database.get_db),
+):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Товар с id={product_id} не найден",
+        )
+
+    reviews = (
+        db.query(models.ProductReview)
+        .filter(models.ProductReview.product_id == product_id)
+        .all()
+    )
+    return reviews
+

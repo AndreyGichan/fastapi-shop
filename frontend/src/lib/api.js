@@ -93,6 +93,17 @@ export async function updateCurrentUser(data) {
   });
 }
 
+export async function changePassword(currentPassword, newPassword) {
+  return apiFetch('/users/me/password', {
+    method: 'PUT',
+    body: {
+      current_password: currentPassword,
+      new_password: newPassword
+    }
+  });
+}
+
+
 export async function deleteCurrentUser() {
   return apiFetch('/users/me', { method: 'DELETE' });
 }
@@ -196,3 +207,13 @@ export async function createOrder() {
   return apiFetch("/orders", { method: "POST" });
 }
 
+export async function getProductRating(productId) {
+  return apiFetch(`/products/${productId}/rating`);
+}
+
+export async function submitProductRating(productId, rating) {
+  return apiFetch(`/products/${productId}/review`, {
+    method: "POST",
+    body: { rating },
+  });
+}

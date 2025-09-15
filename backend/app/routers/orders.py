@@ -93,6 +93,7 @@ def get_orders(
                 "name": product.name,
                 "description": product.description,
                 "price": order_item.price,
+                "image_url": product.image_url,
             }
         )
     orders = list(orders_dict.values())
@@ -172,9 +173,12 @@ def get_my_orders(
             }
         orders_dict[order.id]["items"].append(
             {
+                "id": order_item.id, 
+                "product_id": product.id,
                 "name": product.name,
                 "price": order_item.price,
                 "quantity": order_item.quantity,
+                "image_url": product.image_url,
             }
         )
     my_orders = list(orders_dict.values())
