@@ -10,7 +10,6 @@ export default function RegisterPage() {
       <Header />
 
       <main className="container mx-auto px-20 py-4">
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-2">
           <Link to="/">
             <Button

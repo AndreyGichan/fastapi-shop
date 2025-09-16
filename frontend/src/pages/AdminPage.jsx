@@ -50,7 +50,6 @@ export default function AdminPage() {
             </Tabs>
           </div>
 
-          {/* Admin Stats */}
           <div className="lg:col-span-1">
             <AdminStats />
           </div>

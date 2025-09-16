@@ -50,6 +50,7 @@ class Order(Base):
     )
     status = Column(String, default="в обработке")
     address = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
 
     user = relationship("User")
     items = relationship("OrderItem", back_populates="order")

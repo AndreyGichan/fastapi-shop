@@ -20,10 +20,8 @@ export function AdminUsers() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const usersWithStats = await getUsersStats(); // <-- вызываем /users/stats
+        const usersWithStats = await getUsersStats();
         setUsers(usersWithStats);
-        //console.log("📥 Полученные пользователи:", data);
-        //setUsers(data || []);
       } catch (err) {
         console.error("Ошибка загрузки пользователей:", err);
         toast({

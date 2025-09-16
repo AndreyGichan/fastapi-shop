@@ -1,4 +1,4 @@
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, EmailStr
 from datetime import datetime
 
 
@@ -104,6 +104,7 @@ class OrderBase(BaseModel):
     created_at: datetime
     status: str
     address: str
+    phone: str
     items: list[OrderItemBase]
 
 
@@ -113,12 +114,14 @@ class Order(BaseModel):
     created_at: datetime
     status: str
     address: str
+    phone: str
     user_id: int
     items: list[OrderItem]
 
 
 class OrderCreate(BaseModel):
     address: str
+    phone: str
     # items: list[OrderItemCreate]
 
 
@@ -181,3 +184,12 @@ class Cart(BaseModel):
 class CartAdd(BaseModel):
     product_id: int
     quantity: int
+
+
+class AdminTempPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class AdminTempPasswordResponse(BaseModel):
+    email: EmailStr
+    temp_password: str

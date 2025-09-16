@@ -36,11 +36,11 @@ export async function logout() {
   localStorage.removeItem('role');
 }
 
-export async function register({ username, email, password }) {
+export async function register({ username, last_name, email, password }) {
   const res = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ username, last_name, email, password }),
   });
 
   const data = await res.json();

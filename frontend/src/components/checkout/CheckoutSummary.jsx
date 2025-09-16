@@ -9,7 +9,7 @@ import { useToast } from "../ui/useToast"
 
 const API_URL = process.env.REACT_APP_API_URL || ""
 
-export function CheckoutSummary({ items }) {
+export function CheckoutSummary({ items, address, phone }) {
     const { reloadCart } = useCart()
     const [loading, setLoading] = useState(false)
     const { toast } = useToast()
@@ -27,21 +27,31 @@ export function CheckoutSummary({ items }) {
             })
             return
         }
+        if (!address || !phone) {
+            toast({
+                title: "Заполните адрес и телефон",
+                description: "Эти данные обязательны для оформления заказа",
+                variant: "destructive",
+            })
+            return
+        }
+
         setLoading(true)
         try {
-            const order = await apiFetch("/orders/", { method: "POST" })
+            const order = await apiFetch("/orders/", {
+                method: "POST",
+                body: { address, phone }
+            })
             toast({
                 title: "✅ Заказ успешно создан!",
                 description: `Номер заказа: ${order.id}`,
                 variant: "success",
             })
 
-            // очищаем корзину на клиенте
             await clearCart()
             await reloadCart()
 
-            // можно редиректнуть на страницу заказов
-            //window.location.href = "/my_orders"
+            window.location.href = "/profile"
         } catch (err) {
             console.error("Ошибка при создании заказа:", err)
             toast({
@@ -56,8 +66,7 @@ export function CheckoutSummary({ items }) {
 
     return (
         <div className="space-y-6">
-            {/* Товары в заказе */}
-            <Card>
+            <Card className="bg-background">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <ShoppingBag className="h-5 w-5" />
@@ -67,7 +76,7 @@ export function CheckoutSummary({ items }) {
                 <CardContent className="space-y-4">
                     {items.map((item) => (
                         <div key={item.id} className="flex items-center gap-3">
-                            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-lg flex items-center justify-center">
                                 <img src={`${API_URL}${item.image_url}` || "/placeholder.svg"} alt={item.name} className="w-full h-full object-contain rounded" />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -80,8 +89,7 @@ export function CheckoutSummary({ items }) {
                 </CardContent>
             </Card>
 
-            {/* Итоговая сумма */}
-            <Card className="sticky top-24">
+            <Card className="sticky top-24 bg-background">
                 <CardHeader>
                     <CardTitle>Итого к оплате</CardTitle>
                 </CardHeader>

@@ -17,17 +17,32 @@ import { AuthProvider } from "./context/AuthContext";
 import { ToastProviderWithHook } from "./components/ui/useToast"
 import { AdminRoute } from "./components/routes/AdminRoute";
 import { PrivateRoute } from "./components/routes/PrivateRoute";
+import { NoAdminRoute } from "./components/routes/NoAdminRoute";
 
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <ToastProviderWithHook>
+      <ToastProviderWithHook>
+        <CartProvider>
           <Router>
             <div className="App">
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/cart" element={<CartPage />} />
+                <Route
+                  path="/"
+                  element={
+                    <NoAdminRoute>
+                      <HomePage />
+                    </NoAdminRoute>
+                  }
+                />
+                <Route
+                  path="/cart"
+                  element={
+                    <NoAdminRoute>
+                      <CartPage />
+                    </NoAdminRoute>
+                  }
+                />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route
@@ -54,9 +69,10 @@ function App() {
               </Routes>
             </div>
           </Router>
-        </ToastProviderWithHook>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+
+      </ToastProviderWithHook>
+    </AuthProvider >
   )
 }
 

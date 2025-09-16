@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Package, RotateCcw, Star, ShoppingBag } from "lucide-react";
-import { getUserOrders, getProductRating } from "../../lib/api";
+import { getUserOrders, getProductRating, ChevronDown, ChevronUp } from "../../lib/api";
 import { ProductRatingDialog } from "./ProductRatingDialog";
 
 const API_URL = process.env.REACT_APP_API_URL || "";
@@ -48,6 +48,14 @@ export function ProfileOrders() {
       sortOrders(orders, newValue);
       return newValue;
     });
+  };
+
+  const toggleOrderExpanded = (orderId) => {
+    setOrders(prevOrders =>
+      prevOrders.map(order =>
+        order.id === orderId ? { ...order, expanded: !order.expanded } : order
+      )
+    );
   };
 
   const handleRateProduct = (item) => {
@@ -189,13 +197,13 @@ export function ProfileOrders() {
                               : "/placeholder.svg"
                           }
                           alt={item.name}
-                          className="w-12 h-12 object-contain rounded-md bg-white"
+                          className="w-20 h-20 object-contain rounded-md bg-white"
                         />
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-800">
+                          <h4 className="font-medium text-lg text-gray-800">
                             {item.name}
                           </h4>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-4 text-base text-gray-600">
                             <span>Количество: {item.quantity}</span>
                             <span className="font-medium">
                               {item.price.toLocaleString()} р.

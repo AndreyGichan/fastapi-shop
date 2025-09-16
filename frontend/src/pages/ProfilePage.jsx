@@ -13,7 +13,6 @@ export default function ProfilePage() {
             <Header />
 
             <main className="container mx-auto px-20 py-4">
-                {/* Breadcrumb */}
                 <div className="flex items-center gap-2 mb-4">
                     <Link to="/">
                         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
@@ -24,7 +23,6 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Profile Info */}
                     <div className="lg:col-span-2">
                         <div className="relative overflow-hidden rounded-lg gradient-header from-slate-900 via-purple-900 to-slate-900 p-4 mb-7">
                             <div className="relative flex items-center gap-4">
@@ -33,17 +31,15 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </div>
-                        {/* <h1 className="text-3xl font-bold mb-6">Профиль</h1> */}
-
-                        <div className="space-y-8">
-                            <ProfileInfo />
-                            <ProfileOrders />
-                        </div>
+                        <ProfileInfo />
                     </div>
 
-                    {/* Profile Settings */}
                     <div className="lg:col-span-1">
                         <ProfileSettings />
+                    </div>
+
+                    <div className="lg:col-span-3">
+                        <ProfileOrders />
                     </div>
                 </div>
             </main>

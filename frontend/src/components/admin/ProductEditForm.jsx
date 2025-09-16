@@ -21,7 +21,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
         price: product?.price || 0,
         quantity: product?.quantity || 0,
         description: product?.description || "",
-        originalPrice: product?.originalPrice || undefined,
+        originalPrice: product?.original_price || undefined,
         discount: product?.discount || undefined,
         image: null,
     })
@@ -43,7 +43,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             price: product?.price || 0,
             quantity: product?.quantity || 0,
             description: product?.description || "",
-            originalPrice: product?.originalPrice || undefined,
+            originalPrice: product?.original_price || undefined,
             discount: product?.discount || undefined,
             image: null,
         })
@@ -173,8 +173,13 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             dataToSend.append("price", formData.price);
             dataToSend.append("quantity", formData.quantity);
             dataToSend.append("description", formData.description || "");
-            dataToSend.append("originalPrice", formData.originalPrice ?? "");
-            dataToSend.append("discount", formData.discount ?? "");
+
+            if (formData.originalPrice != null) {
+                dataToSend.append("original_price", formData.originalPrice);
+            }
+            if (formData.discount != null) {
+                dataToSend.append("discount", formData.discount);
+            }
 
             // Изображение
             if (formData.image) dataToSend.append("image", formData.image)

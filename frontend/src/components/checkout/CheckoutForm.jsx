@@ -1,51 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card"
 import { Input } from "../ui/Input"
 import Checkbox from "../ui/Checkbox"
-import { CreditCard, Truck, MapPin, User } from "lucide-react"
+import { CreditCard, Truck, MapPin, User, Phone } from "lucide-react"
+import InputMask from "react-input-mask"
 
-export function CheckoutForm() {
+export function CheckoutForm({ address, setAddress, phone, setPhone }) {
   const [deliveryMethod, setDeliveryMethod] = useState("courier")
   const [paymentMethod, setPaymentMethod] = useState("card")
 
   return (
     <div className="space-y-6">
-      {/* Контактная информация */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Контактная информация
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Имя *</label>
-              <Input placeholder="Введите ваше имя" />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Фамилия *</label>
-              <Input placeholder="Введите вашу фамилию" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Телефон *</label>
-              <Input placeholder="+7 (999) 999-99-99" />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Email *</label>
-              <Input type="email" placeholder="example@mail.com" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Способ доставки */}
-      <Card>
+      <Card className="bg-background">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5" />
@@ -83,31 +51,43 @@ export function CheckoutForm() {
                 <MapPin className="h-4 w-4" />
                 Адрес доставки
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Город *</label>
-                  <Input placeholder="Москва" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Индекс</label>
-                  <Input placeholder="123456" />
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Улица, дом, квартира *</label>
-                <Input placeholder="ул. Примерная, д. 1, кв. 1" />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Комментарий к заказу</label>
-                <Input placeholder="Дополнительная информация для курьера" />
-              </div>
+              <Input placeholder="г. Минск, ул. Примерная, д. 1, кв. 1"
+                className="border border-gray-200 rounded-lg p-3"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Способ оплаты */}
-      <Card>
+      <Card className="bg-background">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Телефон
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <InputMask
+            mask="+375 (99) 999-99-99"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            maskChar={null}
+          >
+            {(inputProps, ref) => (
+              <Input
+                {...inputProps}
+                ref={ref} // важно! теперь findDOMNode не нужен
+                placeholder="+375 (29) 999-99-99"
+                className="border border-gray-200 rounded-lg p-3"
+              />
+            )}
+          </InputMask>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-background">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
@@ -136,44 +116,6 @@ export function CheckoutForm() {
                 <div className="font-medium">Наличными при получении</div>
                 <div className="text-sm text-muted-foreground">Оплата курьеру или в пункте выдачи</div>
               </div>
-            </div>
-          </div>
-
-          {paymentMethod === "card" && (
-            <div className="space-y-4 pt-4 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="text-sm font-medium mb-2 block">Номер карты *</label>
-                  <Input placeholder="1234 5678 9012 3456" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Срок действия *</label>
-                  <Input placeholder="MM/YY" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">CVV *</label>
-                  <Input placeholder="123" type="password" />
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Согласие */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-start space-x-3">
-            <Checkbox />
-            <div className="text-sm text-muted-foreground">
-              Я согласен с{" "}
-              <a href="#" className="text-primary hover:underline">
-                условиями использования
-              </a>{" "}
-              и
-              <a href="#" className="text-primary hover:underline ml-1">
-                политикой конфиденциальности
-              </a>
             </div>
           </div>
         </CardContent>

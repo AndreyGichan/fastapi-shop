@@ -32,11 +32,9 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
                 onClose();
                 toast({ title: "Спасибо!", description: "Ваша оценка отправлена", variant: "success" });
             } catch (error) {
-                console.error("Ошибка при отправке оценки:", error);
-
                 const message =
-                    error?.response?.data?.detail || 
-                    error?.message ||                
+                    error?.response?.data?.detail ||
+                    error?.message ||
                     "Не удалось отправить оценку";
 
                 toast({

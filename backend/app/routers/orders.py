@@ -82,6 +82,7 @@ def get_orders(
                 "total_price": order.total_price,
                 "status": order.status,
                 "address": order.address,
+                "phone": order.phone,
                 "items": [],
             }
         orders_dict[order.id]["items"].append(
@@ -169,11 +170,12 @@ def get_my_orders(
                 "total_price": order.total_price,
                 "status": order.status,
                 "address": order.address,
+                "phone": order.phone,
                 "items": [],
             }
         orders_dict[order.id]["items"].append(
             {
-                "id": order_item.id, 
+                "id": order_item.id,
                 "product_id": product.id,
                 "name": product.name,
                 "price": order_item.price,
@@ -241,6 +243,7 @@ def create_order(
         total_price=total_price,
         items=order_items_objects,
         address=order_data.address,
+        phone=order_data.phone,
     )
     db.add(new_order)
     db.commit()
@@ -255,6 +258,7 @@ def create_order(
         "total_price": order_with_items.total_price,  # type: ignore
         "status": order_with_items.status,  # type: ignore
         "address": order_with_items.address,  # type: ignore
+        "phone": order_with_items.phone,  # type: ignore
         "items": [],
     }
 
@@ -269,6 +273,8 @@ def create_order(
     for order_item, product in order_items_with_products:
         order_response["items"].append(
             {
+                "id": order_item.id,
+                "product_id": order_item.product_id,
                 "name": product.name,
                 "price": order_item.price,
                 "quantity": order_item.quantity,

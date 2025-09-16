@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from .. import models, schemas, utils, oauth2
 from ..database import get_db
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+import secrets
+import string
 
 router = APIRouter(tags=["Authentication"])
 
@@ -49,10 +51,48 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     hashed_password = utils.hash(user.password)
     new_user = models.User(
-        username=user.username, email=user.email, password=hashed_password
+        username=user.username,
+        last_name=user.last_name,
+        email=user.email,
+        password=hashed_password,
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
     return new_user
+
+
+def generate_temp_password(length: int = 12) -> str:
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*()-_"
+    return "".join(secrets.choice(alphabet) for _ in range(length))
+
+
+@router.post("/admin/temp-password", response_model=schemas.AdminTempPasswordResponse)
+def admin_generate_temp_password(
+    request: schemas.AdminTempPasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(oauth2.get_current_user),
+):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Доступ запрещен: только администраторы ",
+        )
+
+    user = db.query(models.User).filter(models.User.email == request.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь с таким email не найден",
+        )
+
+    temp_password = generate_temp_password()
+
+    hashed = utils.hash(temp_password)
+    user.password = hashed  # type: ignore
+    db.commit()
+
+    return schemas.AdminTempPasswordResponse(
+        email=user.email, temp_password=temp_password  # type: ignore
+    )

@@ -217,3 +217,11 @@ export async function submitProductRating(productId, rating) {
     body: { rating },
   });
 }
+
+
+export async function adminGenerateTempPassword(email) {
+  return apiFetch("/admin/temp-password", {
+    method: "POST",
+    body: { email },
+  });
+}

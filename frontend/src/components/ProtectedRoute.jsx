@@ -12,7 +12,7 @@ export function ProtectedRoute({ children }) {
     }, [token, navigate])
 
     if (!token) {
-        return null // или лоадер
+        return null
     }
 
     return children

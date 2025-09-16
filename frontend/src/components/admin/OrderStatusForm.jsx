@@ -159,6 +159,10 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                                         disabled
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label>Телефон</Label>
+                                    <Input value={order.phone || "—"} disabled />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

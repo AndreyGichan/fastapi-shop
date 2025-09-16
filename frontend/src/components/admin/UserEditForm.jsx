@@ -8,7 +8,8 @@ import { Textarea } from "../ui/Textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card"
 import { Alert, AlertDescription } from "../ui/Alert"
 import { AlertCircle, User, Mail, Phone, Shield, Info, Calendar, ShoppingBag, DollarSign } from "lucide-react"
-import { updateUserByAdmin } from "../../lib/api";
+import { updateUserByAdmin, adminGenerateTempPassword } from "../../lib/api";
+import { useToast } from "../ui/useToast";
 
 export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
     const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
     const [errors, setErrors] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [activeTab, setActiveTab] = useState("details")
+    const { toast } = useToast()
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
@@ -57,6 +59,37 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
             }
         } finally {
             setIsSubmitting(false)
+        }
+    }
+
+    const handleGenerateTempPassword = async () => {
+        try {
+            const data = await adminGenerateTempPassword(formData.email)
+            toast({
+                title: "Временный пароль создан",
+                description: (
+                    <span>
+                        Пароль для {data.email}:{" "}
+                        <span
+                            onClick={() => navigator.clipboard.writeText(data.temp_password)}
+                            style={{ cursor: "pointer", textDecoration: "underline" }}
+                            title="Кликните, чтобы скопировать"
+                        >
+                            {data.temp_password}
+                        </span>{" "}
+                        (кликните, чтобы скопировать)
+                    </span>
+                ),
+                variant: "success",
+                duration: 10000,
+            })
+        } catch (err) {
+            console.error(err)
+            toast({
+                title: "Ошибка",
+                description: err.message || "Не удалось создать временный пароль",
+                variant: "destructive",
+            })
         }
     }
 
@@ -215,11 +248,11 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Button type="button" variant="outline" className="w-full justify-start">
-                                Отправить ссылку для сброса пароля
-                            </Button>
-                            <Button type="button" variant="outline" className="w-full justify-start">
-                                Отправить уведомление пользователю
+                            <Button type="button"
+                                variant="outline"
+                                className="w-full justify-start"
+                                onClick={handleGenerateTempPassword}>
+                                Сгенерировать временный пароль
                             </Button>
                         </CardContent>
                     </Card>
