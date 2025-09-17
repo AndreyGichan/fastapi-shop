@@ -88,16 +88,14 @@ export function AdminProducts() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold px-8">Управление товарами</h2>
-                <Button className="gap-2 bg-primary hover:bg-[var(--accent)]" onClick={handleAddProduct}>
+                <Button className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800" onClick={handleAddProduct}>
                     <Plus className="h-4 w-4" />
                     Добавить товар
                 </Button>
             </div>
 
-            {/* Search */}
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
@@ -108,7 +106,6 @@ export function AdminProducts() {
                 />
             </div>
 
-            {/* Products List */}
             <div className="space-y-6">
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
@@ -116,7 +113,13 @@ export function AdminProducts() {
                             <CardContent className="p-8">
                                 <h3 className="text-xl font-semibold tracking-tight flex items-center gap-2 mb-3 ">
                                     {product.name}
-                                    <Badge variant={product.quantity > 0 ? "default" : "destructive"}>
+                                    <Badge variant={product.quantity > 0 ? "default" : "destructive"}
+                                        className={
+                                            product.quantity > 0
+                                                ? "bg-gradient-to-r from-purple-800 to-purple-950"
+                                                : ""
+                                        }
+                                    >
                                         {product.quantity > 0 ? "В наличии" : "Нет в наличии"}
                                     </Badge>
                                 </h3>

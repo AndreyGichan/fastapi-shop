@@ -101,7 +101,6 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
 
     return (
         <div className="p-6 space-y-6">
-            {/* Tabs */}
             <div className="flex space-x-1 bg-muted/50 p-1 rounded-lg">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -122,7 +121,6 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Errors */}
                 {Object.keys(errors).length > 0 && (
                     <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
                         <AlertCircle className="h-4 w-4" />
@@ -130,9 +128,8 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                     </Alert>
                 )}
 
-                {/* Details */}
                 {activeTab === "details" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <Info className="h-5 w-5 text-primary" />
@@ -148,7 +145,8 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                                         value={formData.username}
                                         onChange={(e) => handleInputChange("username", e.target.value)}
                                         placeholder="Введите имя"
-                                        className={errors.username ? "border-destructive" : ""}
+                                        className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.username ? "border-destructive" : ""
+                                            }`}
                                         required
                                         disabled={readOnly}
                                     />
@@ -166,6 +164,7 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                                         value={formData.last_name}
                                         onChange={(e) => handleInputChange("last_name", e.target.value)}
                                         placeholder="Введите фамилию"
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         disabled={readOnly}
                                     />
                                 </div>
@@ -179,7 +178,8 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         placeholder="Введите email"
-                                        className={errors.email ? "border-destructive" : ""}
+                                        className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.email ? "border-destructive" : ""
+                                            }`}
                                         required
                                         disabled={readOnly}
                                     />
@@ -196,7 +196,8 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                                         id="role"
                                         value={formData.role}
                                         onChange={(e) => handleInputChange("role", e.target.value)}
-                                        className={errors.role ? "border-destructive" : ""}
+                                        className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.role ? "border-destructive" : ""
+                                            }`}
                                         required
                                         disabled={readOnly}
                                     >
@@ -210,9 +211,8 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                     </Card>
                 )}
 
-                {/* Activity */}
                 {activeTab === "activity" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <ShoppingBag className="h-5 w-5 text-primary" />
@@ -230,17 +230,12 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                                     {(user.totalSpent || 0).toLocaleString()} р.
                                 </p>
                             </div>
-                            {/* <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                                <p className="text-sm text-purple-600">Дата регистрации</p>
-                                <p className="text-xl font-bold text-purple-700">{user.joinDate || "-"}</p>
-                            </div> */}
                         </CardContent>
                     </Card>
                 )}
 
-                {/* Settings */}
                 {!readOnly && activeTab === "settings" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <Shield className="h-5 w-5 text-primary" />
@@ -250,7 +245,7 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                         <CardContent className="space-y-4">
                             <Button type="button"
                                 variant="outline"
-                                className="w-full justify-start"
+                                className="w-full justify-start border border-gray-200"
                                 onClick={handleGenerateTempPassword}>
                                 Сгенерировать временный пароль
                             </Button>
@@ -259,7 +254,6 @@ export function UserEditForm({ user, onSave, onCancel, readOnly = false }) {
                 )}
 
 
-                {/* Footer */}
                 <div className="flex justify-end gap-3 pt-4">
                     {!readOnly && (
                         <Button type="button" variant="outline" onClick={onCancel}>

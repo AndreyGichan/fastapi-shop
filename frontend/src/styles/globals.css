@@ -37,7 +37,8 @@
   /* Light border */
   --input: #f8fafc;
   /* Light input background */
-  --input-bg: #e9e7ee;
+  /* --input-bg: #e9e7ee; */
+  --input-bg: #ede7ee;
   --ring: hsla(248, 39%, 39%, 0.5);
   /* Purple ring with opacity */
   --chart-1: #3b82f6;
@@ -170,9 +171,10 @@
   .gradient-primary {
     background: linear-gradient(135deg, oklch(0.35 0.08 280) 0%, oklch(0.15 0.02 280) 100%);
   }
+
   .gradient-header {
-   background: linear-gradient(135deg, #3b2c70 0%, #5a46a3 100%);
-}
+    background: linear-gradient(135deg, #3b2c70 0%, #5a46a3 100%);
+  }
 
   .gradient-card {
     background: linear-gradient(145deg, oklch(0.98 0.01 280) 0%, oklch(1 0 0) 100%);

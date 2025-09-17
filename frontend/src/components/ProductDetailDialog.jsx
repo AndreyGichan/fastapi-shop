@@ -119,24 +119,24 @@ export function ProductDetailDialog({ product, open, onOpenChange }) {
 
 
                                 <div className="flex gap-3">
-                                    <Button onClick={handleAddToCart} className="flex-1 h-12 font-semibold bg-primary hover:bg-[var(--accent)] text-base text-primary-foreground transition-colors">
+                                    <Button onClick={handleAddToCart} className="flex-1 h-12 font-semibold bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-base text-primary-foreground transition-colors">
                                         <ShoppingCart className="h-5 w-5 mr-2" />В корзину
                                     </Button>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-1 p-2 bg-white rounded-lg border">
                                     <div className="text-center">
-                                        <Truck className="h-6 w-6 text-primary mx-auto mb-1" />
+                                        <Truck className="h-6 w-6 text-purple-800 mx-auto mb-1" />
                                         <p className="text-sm font-medium text-gray-900">Доставка</p>
                                         <p className="text-xs text-gray-500">1-2 дня</p>
                                     </div>
                                     <div className="text-center">
-                                        <Shield className="h-6 w-6 text-primary mx-auto mb-1" />
+                                        <Shield className="h-6 w-6 text-purple-800 mx-auto mb-1" />
                                         <p className="text-sm font-medium text-gray-900">Гарантия</p>
                                         <p className="text-xs text-gray-500">2 года</p>
                                     </div>
                                     <div className="text-center">
-                                        <RotateCcw className="h-6 w-6 text-primary mx-auto mb-1" />
+                                        <RotateCcw className="h-6 w-6 text-purple-800 mx-auto mb-1" />
                                         <p className="text-sm font-medium text-gray-900">Возврат</p>
                                         <p className="text-xs text-gray-500">30 дней</p>
                                     </div>

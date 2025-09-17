@@ -41,7 +41,7 @@ export function CartSummary({ items }) {
 
         {shipping === 0 && <p className="text-sm text-green-600">🎉 Бесплатная доставка при заказе от 1000 р.</p>}
 
-        <Button className="w-full" size="lg" onClick={handleCheckout}>
+        <Button className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800" size="lg" onClick={handleCheckout}>
           Оформить заказ
         </Button>
 

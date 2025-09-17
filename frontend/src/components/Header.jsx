@@ -17,7 +17,7 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSea
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-800 to-purple-950 rounded-xl flex items-center justify-center shadow-sm">
               <span className="text-primary-foreground font-bold text-xl">T</span>
             </div>
             <h1 className="text-3xl font-bold text-foreground tracking-tight">TechStore</h1>
@@ -48,7 +48,7 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSea
               >
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-800 to-purple-950 text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                     {cartCount}
                   </span>
                 )}

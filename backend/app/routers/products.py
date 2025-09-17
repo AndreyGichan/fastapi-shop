@@ -157,6 +157,17 @@ def get_products_for_admin(
     return products
 
 
+@router.get("/categories", response_model=list[dict])
+def get_categories(db: Session = Depends(database.get_db)):
+    query = (
+        db.query(models.Product.category, func.count(models.Product.id).label("count"))
+        .group_by(models.Product.category)
+        .all()
+    )
+
+    return [{"name": c[0], "count": c[1]} for c in query]
+
+
 @router.get("/{id}", response_model=schemas.ProductBase)
 def get_product(id: int, db: Session = Depends(database.get_db)):
     # product = db.query(models.Product).filter(models.Product.id == id).first()
@@ -393,12 +404,6 @@ def add_to_cart(
     return cart_item_data
 
 
-@router.get("/categories/", response_model=list[str])
-def get_categories(db: Session = Depends(database.get_db)):
-    categories = db.query(models.Product.category).distinct().all()
-    return [c[0] for c in categories]
-
-
 @router.post(
     "/{product_id}/review",
     response_model=schemas.ReviewResponse,
@@ -461,4 +466,3 @@ def get_reviews_for_product(
         .all()
     )
     return reviews
-

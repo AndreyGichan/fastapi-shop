@@ -57,7 +57,10 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
         const API_URL = process.env.REACT_APP_API_URL || ""
         fetch(`${API_URL}/products/categories/`)
             .then(res => res.json())
-            .then(data => setCategories(data))
+            .then(data => {
+                const normalized = data.map(cat => typeof cat === "string" ? cat : cat.name)
+                setCategories(normalized)
+            })
             .catch(err => console.error("Ошибка при загрузке категорий:", err))
     }, [])
 
@@ -245,7 +248,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
     return (
         <div className="p-6 space-y-6">
             {/* Tabs */}
-            <div className="flex space-x-1 bg-muted/50 p-1 rounded-lg">
+            <div className="flex space-x-1 p-1 rounded-lg">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
                     return (
@@ -265,7 +268,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Errors */}
                 {Object.keys(errors).length > 0 && (
                     <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
                         <AlertCircle className="h-4 w-4" />
@@ -273,9 +275,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                     </Alert>
                 )}
 
-                {/* Details Tab */}
                 {activeTab === "details" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <Info className="h-5 w-5 text-primary" />
@@ -291,7 +292,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                         value={formData.name}
                                         onChange={(e) => handleInputChange("name", e.target.value)}
                                         placeholder="Введите название товара"
-                                        className={errors.name ? "border-destructive" : ""}
+                                        className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.name ? "border-destructive" : ""
+                                            }`}
                                         required
                                         disabled={readOnly}
 
@@ -319,7 +321,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                                 handleInputChange("category", value)
                                             }
                                         }}
-                                        className={errors.category ? "border-destructive" : "w-full"}
+                                        className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.category ? "border-destructive" : "w-full"
+                                            }`}
                                         required
                                         disabled={readOnly}
                                     >
@@ -338,7 +341,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                             placeholder="Введите новую категорию"
                                             value={formData.category}
                                             onChange={(e) => handleInputChange("category", e.target.value)}
-                                            className={errors.category ? "border-destructive mt-2" : "mt-2"}
+                                            className={`border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${errors.category ? "border-destructive mt-2" : "mt-2"
+                                                }`}
                                             disabled={readOnly}
                                         />
                                     )}
@@ -362,7 +366,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                     onChange={(e) => handleInputChange("description", e.target.value)}
                                     placeholder="Введите подробное описание товара"
                                     rows={4}
-                                    className="resize-none"
+                                    className="bg-background border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                                     disabled={readOnly}
                                 />
                             </div>
@@ -387,7 +391,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
 
                 {/* Pricing Tab */}
                 {activeTab === "pricing" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)] ">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <DollarSign className="h-5 w-5 text-primary" />
@@ -406,6 +410,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                             const value = e.target.value === "" ? undefined : Number(e.target.value)
                                             handleInputChange("price", value)
                                         }}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         placeholder="0"
                                         min="0"
                                         disabled={readOnly}
@@ -428,6 +433,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                             const value = e.target.value === "" ? undefined : Number(e.target.value)
                                             handleInputChange("originalPrice", value)
                                         }}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         placeholder="Не обязательно"
                                         min="0"
                                         disabled={readOnly}
@@ -451,6 +457,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                             const value = e.target.value === "" ? undefined : Number(e.target.value)
                                             handleInputChange("discount", value)
                                         }}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         placeholder="Авто-расчет"
                                         min="0"
                                         disabled={readOnly}
@@ -468,9 +475,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                     </Card>
                 )}
 
-                {/* Images Tab */}
                 {activeTab === "images" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <ImageIcon className="h-5 w-5 text-primary" />
@@ -495,7 +501,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                 </div>
 
 
-                                {/* Upload / URL input */}
                                 {!readOnly && (
                                     <div className="flex-1 space-y-2">
                                         <label className="flex flex-col gap-1">
@@ -518,9 +523,8 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
 
 
 
-                {/* Inventory Tab */}
                 {activeTab === "inventory" && (
-                    <Card className="border-0 shadow-lg bg-gradient-card">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <Package className="h-5 w-5 text-primary" />
@@ -536,7 +540,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                         type="number"
                                         value={formData.quantity}
                                         onChange={(e) => {
-                                            // Просто сохраняем число без ограничений
                                             handleInputChange("quantity", e.target.value);
                                         }}
                                         onBlur={(e) => {
@@ -545,6 +548,7 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                             if (isNaN(num) || num < 0) num = 0;
                                             handleInputChange("quantity", num);
                                         }}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         placeholder="0"
                                         min="0"
                                     />
@@ -561,10 +565,9 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                     </Card>
                 )}
 
-                {/* Form Actions */}
                 <div className="flex justify-end gap-4 pt-6 border-t border-border/50">
                     {!readOnly && (
-                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting} className="px-8 py-2 h-11 bg-transparent">
+                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting} className="px-8 py-2 h-11 bg-transparent border border-gray-200">
                             Отмена
                         </Button>
                     )}

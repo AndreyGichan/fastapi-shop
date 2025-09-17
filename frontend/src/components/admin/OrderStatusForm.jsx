@@ -48,7 +48,7 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
 
 
     const [formData, setFormData] = useState({
-        status: order?.status || "", // пустое если нет order
+        status: order?.status || "",
     })
 
     useEffect(() => {
@@ -78,8 +78,13 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
         if (!validateForm()) return
         setIsSubmitting(true)
         try {
-            const updatedOrder = await updateOrderStatus(order.id, formData);
-            onSave(updatedOrder)
+            await updateOrderStatus(order.id, formData);
+
+            // Обновляем локальный объект заказа с новым статусом
+            const updatedOrder = { ...order, status: formData.status };
+
+            // Передаем обновленный объект дальше
+            onSave(updatedOrder);
         } catch (error) {
             console.error("Ошибка сохранения заказа:", error)
             setErrors({ submit: "Не удалось обновить заказ. Попробуйте снова." });
@@ -126,9 +131,8 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                     </Alert>
                 )}
 
-                {/* Details Tab */}
                 {activeTab === "details" && (
-                    <Card className="border-0 shadow-lg">
+                    <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center space-x-2 text-xl">
                                 <Package className="h-5 w-5 text-primary" />
@@ -139,16 +143,25 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>ID клиента</Label>
-                                    <Input value={order.user_id || "—"} disabled />
+                                    <Input
+                                        value={order.user_id || "—"}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        disabled
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Адрес доставки</Label>
-                                    <Input value={order.address || "—"} disabled />
+                                    <Input
+                                        value={order.address || "—"}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        disabled
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Дата заказа</Label>
                                     <Input
                                         value={order.created_at ? new Date(order.created_at).toLocaleDateString("ru-RU") : "—"}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         disabled
                                     />
                                 </div>
@@ -156,12 +169,17 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                                     <Label>Общая сумма (р.)</Label>
                                     <Input
                                         value={order.total_price != null ? `${Number(order.total_price).toLocaleString()}` : "—"}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                                         disabled
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Телефон</Label>
-                                    <Input value={order.phone || "—"} disabled />
+                                    <Input
+                                        value={order.phone || "—"}
+                                        className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        disabled
+                                    />
                                 </div>
                             </div>
                         </CardContent>

@@ -30,8 +30,10 @@ export function AdminStats() {
           return createdAt >= thirtyDaysAgo;
         });
 
-        setOrders(last30DaysOrders.length);
-        const totalSales = last30DaysOrders.reduce((sum, order) => sum + (order.total_price || 0), 0);
+        const deliveredOrders = last30DaysOrders.filter(order => order.status === "доставлен");
+        setOrders(deliveredOrders.length);
+
+        const totalSales = deliveredOrders.reduce((sum, order) => sum + (order.total_price || 0), 0);
         setSales(totalSales);
 
         const productsData = await getProductsForAdmin();

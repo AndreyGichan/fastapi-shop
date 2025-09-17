@@ -37,7 +37,7 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
                 {/* Header */}
-                <div className="relative bg-gradient-to-r from-cyan-500 to-blue-600 p-6 text-white">
+                <div className="relative bg-gradient-to-r from-purple-800 to-purple-950 p-6 text-white">
                     <div className="relative flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -45,7 +45,7 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-bold">Редактировать профиль</h2>
-                                <p className="text-cyan-100">Обновите свою личную информацию</p>
+                                <p className="text-purple-200">Обновите свою личную информацию</p>
                             </div>
                         </div>
                         <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20 rounded-xl">
@@ -54,20 +54,23 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                     </div>
                 </div>
 
+
+
+
                 {/* Content */}
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* First Name */}
                         <div className="space-y-2">
                             <Label htmlFor="firstName" className="flex items-center gap-2 text-sm font-medium">
-                                <User className="h-4 w-4 text-cyan-600" />
+                                <User className="h-4 w-4 text-purple-800" />
                                 Имя
                             </Label>
                             <Input
                                 id="firstName"
                                 value={formData.firstName}
                                 onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                className="border-gray-200 focus:border-cyan-500 focus:ring-cyan-500"
+                                className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                 placeholder="Введите имя"
                             />
                         </div>
@@ -75,14 +78,14 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                         {/* Last Name */}
                         <div className="space-y-2">
                             <Label htmlFor="lastName" className="flex items-center gap-2 text-sm font-medium">
-                                <User className="h-4 w-4 text-cyan-600" />
+                                <User className="h-4 w-4 text-purple-800" />
                                 Фамилия
                             </Label>
                             <Input
                                 id="lastName"
                                 value={formData.lastName}
                                 onChange={(e) => handleInputChange("lastName", e.target.value)}
-                                className="border-gray-200 focus:border-cyan-500 focus:ring-cyan-500"
+                                className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                 placeholder="Введите фамилию"
                             />
                         </div>
@@ -90,7 +93,7 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                         {/* Email */}
                         <div className="space-y-2">
                             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
-                                <Mail className="h-4 w-4 text-cyan-600" />
+                                <Mail className="h-4 w-4 text-purple-800" />
                                 Email
                             </Label>
                             <Input
@@ -98,7 +101,7 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => handleInputChange("email", e.target.value)}
-                                className="border-gray-200 focus:border-cyan-500 focus:ring-cyan-500"
+                                className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                 placeholder="Введите email"
                             />
                         </div>
@@ -107,12 +110,12 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
 
                 {/* Footer */}
                 <div className="border-t bg-gray-50 px-6 py-4 flex justify-end gap-3">
-                    <Button type="button" variant="outline" onClick={onClose} className="px-6 bg-transparent">
+                    <Button type="button" variant="outline" onClick={onClose} className="px-6 bg-transparent border-gray-200 hover:bg-gradient-to-r hover:from-purple-400 hover:to-purple-600 hover:text-white">
                         Отмена
                     </Button>
                     <Button
                         onClick={handleSubmit}
-                        className="px-6 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white"
+                        className="px-6 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-white"
                     >
                         Сохранить изменения
                     </Button>

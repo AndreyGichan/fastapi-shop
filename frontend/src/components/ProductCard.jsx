@@ -10,7 +10,6 @@ import { ProductDetailDialog } from "./ProductDetailDialog"
 const API_URL = process.env.REACT_APP_API_URL;
 
 const ProductCard = ({ product }) => {
-  //const { cartItems, setCartItems } = useCart()
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -32,11 +31,10 @@ const ProductCard = ({ product }) => {
   return (
     <>
       <Card
-        className="group overflow-hidden border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-background cursor-pointer flex flex-col h-full"
+        className="group overflow-hidden border border-border shadow-[0_0_07px_rgba(0,0,0,0.2)] hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-background cursor-pointer flex flex-col h-full"
         onClick={() => handleProductClick(product)}
       >
         <CardContent className="p-5 flex flex-col">
-          {/* Верхняя часть: картинка */}
           <div className="relative">
             <img
               src={`${API_URL}${product.image_url}` || "/placeholder.svg"}
@@ -48,19 +46,12 @@ const ProductCard = ({ product }) => {
                 -{product.discount}%
               </Badge>
             )}
-            {/* {product.originalPrice && (
-            <Badge className="absolute top-2 left-2 bg-red-500 text-white">
-              Скидка {(product.originalPrice - product.price).toFixed(2)} р.
-            </Badge>
-          )} */}
           </div>
 
-          {/* Название */}
           <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors mt-3 mb-3">
             {product.name}
           </h3>
 
-          {/* Нижняя часть карточки */}
           <div className="mt-auto flex flex-col gap-2">
             <div className="flex items-center gap-1">
               <div className="flex items-center">{renderStars(product.average_rating || 0)}</div>
@@ -78,9 +69,9 @@ const ProductCard = ({ product }) => {
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                addToCart(product.id, 1, product.name); 
+                addToCart(product.id, 1, product.name);
               }}
-              className="w-full bg-primary hover:bg-[var(--accent)] text-primary-foreground transition-colors">
+              className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 transition-colors">
               <ShoppingCart className="h-4 w-4 mr-2" />В корзину
             </Button>
           </div>

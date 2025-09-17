@@ -25,8 +25,9 @@ export function ProfileSettings() {
             const orders = await getUserOrders();
             setTotalOrders(orders.length);
 
-            // сумма total_price по всем заказам
-            const spent = orders.reduce((acc, order) => acc + (order.total_price || 0), 0);
+            const spent = orders
+                .filter(order => order.status === "доставлен")
+                .reduce((acc, order) => acc + (order.total_price || 0), 0);
             setTotalSpent(spent);
         } catch (err) {
             console.error("Ошибка при загрузке статистики:", err);
@@ -41,61 +42,61 @@ export function ProfileSettings() {
     };
     return (
         <>
-        <div className="space-y-6">
-            {/* Account Stats */}
-            <Card className="bg-background">
-                <CardHeader>
-                    <CardTitle className="text-lg">Статистика</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Всего заказов</span>
-                        <span className="font-semibold">{totalOrders}</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Потрачено</span>
-                        <span className="font-semibold">{totalSpent.toLocaleString("ru-RU")} р.</span>
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="space-y-6">
+                {/* Account Stats */}
+                <Card className="bg-background">
+                    <CardHeader>
+                        <CardTitle className="text-lg">Статистика</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Всего заказов</span>
+                            <span className="font-semibold">{totalOrders}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Потрачено</span>
+                            <span className="font-semibold">{totalSpent.toLocaleString("ru-RU")} р.</span>
+                        </div>
+                    </CardContent>
+                </Card>
 
-            {/* Quick Actions */}
-            <Card className="bg-background">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Settings className="h-5 w-5 text-primary" />
-                        Настройки
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => setIsSecurityDialogOpen(true)}>
-                        <Shield className="h-4 w-4" />
-                        Безопасность
-                    </Button>
-                    {/* <Button variant="ghost" className="w-full justify-start gap-3">
+                {/* Quick Actions */}
+                <Card className="bg-background">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Settings className="h-5 w-5 text-primary" />
+                            Настройки
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => setIsSecurityDialogOpen(true)}>
+                            <Shield className="h-4 w-4" />
+                            Безопасность
+                        </Button>
+                        {/* <Button variant="ghost" className="w-full justify-start gap-3">
                         <CreditCard className="h-4 w-4" />
                         Способы оплаты
                     </Button> */}
-                    {/* <Button variant="ghost" className="w-full justify-start gap-3">
+                        {/* <Button variant="ghost" className="w-full justify-start gap-3">
                         <Gift className="h-4 w-4" />
                         Бонусная программа
                     </Button> */}
 
-                    <Separator className="my-4" />
+                        <Separator className="my-4" />
 
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={handleLogout}
-                    >
-                        <LogOut className="h-4 w-4" />
-                        Выйти из аккаунта
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-        <SecurityDialog isOpen={isSecurityDialogOpen} onClose={() => setIsSecurityDialogOpen(false)} />
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Выйти из аккаунта
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+            <SecurityDialog isOpen={isSecurityDialogOpen} onClose={() => setIsSecurityDialogOpen(false)} />
         </>
     );
 }

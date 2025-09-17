@@ -9,30 +9,39 @@ import { Link } from "react-router-dom"
 import { clearCart } from "../lib/api"
 import { useCart } from "../context/CartContext"
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../components/ui/useToast";
+
 
 export default function CartPage() {
     const { cartItems, setCartItems } = useCart()
     const isEmpty = cartItems.length === 0
     const { isAuthenticated } = useAuth();
+    const { toast } = useToast();
 
     useEffect(() => {
-        // Здесь можно при необходимости подгружать корзину с сервера,
-        // если она не была загружена ранее в контексте
         if (!cartItems.length) {
-            setCartItems([]) // можно вызвать загрузку через reloadCart, если добавим
+            setCartItems([])
         }
     }, [])
 
     const handleClearCart = async () => {
-        if (!window.confirm("Вы действительно хотите очистить корзину?")) return
-
         try {
-            await clearCart()
-            setCartItems([])
+            await clearCart();
+            setCartItems([]);
+            toast({
+                title: "Корзина очищена",
+                description: "Все товары были успешно удалены из корзины",
+                variant: "success"
+            });
         } catch (err) {
-            console.error("Ошибка при очистке корзины:", err)
+            console.error("Ошибка при очистке корзины:", err);
+            toast({
+                title: "Ошибка",
+                description: "Не удалось очистить корзину. Попробуйте позже.",
+                variant: "destructive"
+            });
         }
-    }
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -40,13 +49,12 @@ export default function CartPage() {
 
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto px-4">
-                    {/* Breadcrumb */}
                     <div className="flex items-center gap-2 mb-8">
                         <Link to="/">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="gap-2 text-muted-foreground hover:text-foreground"
+                                className="gap-2 text-muted-foreground"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Вернуться к покупкам
@@ -57,7 +65,7 @@ export default function CartPage() {
                             <Button
                                 variant="destructive"
                                 size="sm"
-                                className="ml-auto flex items-center gap-2"
+                                className="ml-auto flex items-center gap-2 hover:bg-red-600/80 transition-colors"
                                 onClick={handleClearCart}
                             >
                                 <Trash2 className="h-4 w-4" />
@@ -70,7 +78,6 @@ export default function CartPage() {
                     <div className="grid lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
 
-                            {/* Неавторизованный пользователь */}
                             {!isAuthenticated && (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
                                     <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -93,10 +100,9 @@ export default function CartPage() {
 
                             )}
 
-                            {/* Пустая корзина у авторизованного пользователя */}
-                            {isAuthenticated && isEmpty && <CartEmpty />}
 
-                            {/* Содержимое корзины */}
+
+
                             {isAuthenticated && !isEmpty && (
                                 <div className="space-y-4">
                                     {cartItems.map((item) => (
@@ -104,20 +110,6 @@ export default function CartPage() {
                                     ))}
                                 </div>
                             )}
-                            {/* {cartItems.length === 0 ? (
-                                <CartEmpty />
-                            ) : (
-                                <div className="space-y-4">
-                                    {cartItems.map((item) => (
-                                        <CartItem
-                                            key={item.id}  // используем уникальный id из CartItem
-                                            item={item}
-                                            setItems={setCartItems}
-                                        />
-                                    ))}
-
-                                </div>
-                            )} */}
                         </div>
 
                         {isAuthenticated && !isEmpty && (
@@ -126,6 +118,12 @@ export default function CartPage() {
                             </div>
                         )}
                     </div>
+
+                    {isAuthenticated && isEmpty && (
+                        <div className="justify-center px-20">
+                            <CartEmpty />
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

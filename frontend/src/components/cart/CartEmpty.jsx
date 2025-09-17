@@ -5,9 +5,9 @@ import { Link } from "react-router-dom"
 
 export function CartEmpty() {
   return (
-    <Card>
+    <Card className="bg-background">
       <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
+        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
           <ShoppingCart className="h-12 w-12 text-muted-foreground" />
         </div>
 
@@ -17,7 +17,7 @@ export function CartEmpty() {
         </p>
 
         <Link to="/">
-          <Button size="lg" className="gap-2 hover:bg-[var(--accent)]">
+          <Button size="lg" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800">
             <ShoppingCart className="h-4 w-4" />
             Перейти к покупкам
           </Button>

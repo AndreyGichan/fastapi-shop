@@ -6,10 +6,6 @@ import RegisterPage from './pages/RegisterPage'
 import ProfilePage from "./pages/ProfilePage"
 import CheckoutPage from "./pages/CheckoutPage"
 import AdminPage from "./pages/AdminPage"
-
-import ProductPage from "./pages/ProductPage"
-import SellerPage from "./pages/SellerPage"
-import ReviewPage from "./pages/ReviewPage"
 import "./styles/globals.css"
 
 import { CartProvider } from "./context/CartContext";
@@ -62,10 +58,6 @@ function App() {
                     </AdminRoute>
                   }
                 />
-
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/seller" element={<SellerPage />} />
-                <Route path="/review" element={<ReviewPage />} />
               </Routes>
             </div>
           </Router>

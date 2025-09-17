@@ -1,7 +1,7 @@
 import { Button } from "./ui/Button"
-import { ArrowRight, Zap, Shield, Truck } from "lucide-react"
+import { ArrowRight, RotateCcw, Shield, Truck } from "lucide-react"
 
-export function HeroSection() {
+export function HeroSection({ onExplore }) {
     return (
         <section className="relative overflow-hidden bg-background bg-gray-100">
             <div className="absolute inset-0 tech-grid opacity-5 "></div>
@@ -20,8 +20,9 @@ export function HeroSection() {
 
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Button
+                                onClick={onExplore}
                                 size="lg"
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg rounded-xl emerald-glow hover:shadow-lg transition-all duration-300 group"
+                                className="bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-primary-foreground px-8 py-4 text-lg rounded-xl emerald-glow hover:shadow-lg transition-all duration-300 group"
                             >
                                 Исследовать каталог
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -38,9 +39,9 @@ export function HeroSection() {
                         <div className="grid grid-cols-3 gap-8 pt-12">
                             <div className="text-center space-y-3 group">
                                 <div className="w-16 h-16 bg-[var(--input-bg)] rounded-2xl flex items-center justify-center mx-auto border border-border group-hover:border-primary/30 group-hover:bg-primary/5 transition-all duration-300">
-                                    <Zap className="h-7 w-7 text-primary group-hover:scale-110 transition-transform" />
+                                    <Truck className="h-7 w-7 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
-                                <p className="text-sm font-semibold text-card-foreground">Молниеносная доставка</p>
+                                <p className="text-sm font-semibold text-card-foreground">Быстрая доставка</p>
                             </div>
                             <div className="text-center space-y-3 group">
                                 <div className="w-16 h-16 bg-[var(--input-bg)] rounded-2xl flex items-center justify-center mx-auto border border-border group-hover:border-primary/30 group-hover:bg-primary/5 transition-all duration-300">
@@ -50,9 +51,9 @@ export function HeroSection() {
                             </div>
                             <div className="text-center space-y-3 group">
                                 <div className="w-16 h-16 bg-[var(--input-bg)] rounded-2xl flex items-center justify-center mx-auto border border-border group-hover:border-primary/30 group-hover:bg-primary/5 transition-all duration-300">
-                                    <Truck className="h-7 w-7 text-primary group-hover:scale-110 transition-transform" />
+                                    <RotateCcw className="h-7 w-7 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
-                                <p className="text-sm font-semibold text-card-foreground">Бесплатная доставка</p>
+                                <p className="text-sm font-semibold text-card-foreground">Возможность возврата</p>
                             </div>
                         </div>
                     </div>

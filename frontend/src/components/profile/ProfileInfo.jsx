@@ -44,7 +44,7 @@ export function ProfileInfo() {
             <User className="h-5 w-5 text-primary" />
             Личная информация
           </CardTitle>
-          <Button variant="outline" size="sm" className="gap-2 bg-primary text-white hover:bg-[var(--accent)]" onClick={() => setIsEditDialogOpen(true)}>
+          <Button variant="outline" size="sm" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-white" onClick={() => setIsEditDialogOpen(true)}>
             <Edit className="h-4 w-4" />
             Редактировать
           </Button>
@@ -65,16 +65,6 @@ export function ProfileInfo() {
             </div>
           </div>
 
-          {/* <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Email
-              </label>
-              <Input value={user.email || ""} className="border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" readOnly />
-            </div>
-
-          </div> */}
           <div className="flex w-full gap-4">
             <div className="flex flex-col w-1/2 space-y-2">
               <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">

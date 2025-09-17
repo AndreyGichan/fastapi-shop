@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card"
 import { Header } from "../components/Header"
 import { HeroSection } from "../components/HeroSection";
@@ -12,6 +12,8 @@ import { Badge } from "../components/ui/Badge"
 import { apiFetch } from "../lib/api"
 import { useCart } from "../context/CartContext"
 
+
+const API_URL = process.env.REACT_APP_API_URL;
 const MAX_PRICE = 5000
 const brands = [
     { id: "apple", label: "Apple", count: 45 },
@@ -32,13 +34,15 @@ const HomePage = () => {
     const [sortOrder, setSortOrder] = useState("desc")
     const { cartItems } = useCart()
     const cartCount = cartItems.reduce((sum, i) => sum + (i.quantity || 0), 0)
+    const productsRef = useRef(null);
 
-    const API_URL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
-        fetch(`${API_URL}/products/categories/`)
+        fetch(`${API_URL}/products/categories`)
             .then((res) => res.json())
-            .then((data) => setCategories(data))
+            .then(data => {
+                setCategories(data)
+            })
             .catch((err) => console.error(err))
     }, [])
 
@@ -76,10 +80,16 @@ const HomePage = () => {
         ))
     }
 
+    const scrollToProducts = () => {
+        if (productsRef.current) {
+            productsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} search={search} setSearch={setSearch} cartCount={cartCount} showSearch={true} />
-            <HeroSection />
+            <HeroSection onExplore={scrollToProducts} />
 
             <div className="container mx-auto px-20 py-6">
                 <div className="flex gap-6">
@@ -87,41 +97,39 @@ const HomePage = () => {
                         className={`w-64 space-y-6 h-fit sticky top-24 ${sidebarOpen ? "block" : "hidden md:block"}`}
                     >
 
-                        <Card className="gradient-card border-0 shadow-lg">
+                        <Card className="gradient-card border-0 shadow-[0_0_07px_rgba(0,0,0,0.2)]">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">Категории</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 {categories.map((category) => (
                                     <div
-                                        key={category}
+                                        key={category.name}
                                         className="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer"
                                     >
                                         <div className="flex items-center space-x-3">
                                             <Checkbox
-                                                id={category}
-                                                checked={selectedCategories.includes(category)}
+                                                id={category.name}
+                                                checked={selectedCategories.includes(category.name)}
                                                 onCheckedChange={(checked) =>
-                                                    handleCategoryChange(category, checked)
+                                                    handleCategoryChange(category.name, checked)
                                                 }
                                             />
                                             <label
-                                                htmlFor={category}
+                                                htmlFor={category.name}
                                                 className="text-sm font-medium cursor-pointer"
                                             >
-                                                {category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}
+                                                {category.name.charAt(0).toUpperCase() + category.name.slice(1).toLowerCase()}
                                             </label>
                                         </div>
-                                        {/* пока нет количества в API → можно убрать */}
-                                        {/* <Badge variant="outline" className="text-xs">
-                                            {Math.floor(Math.random() * 100)}
-                                        </Badge> */}
+                                        <Badge variant="outline" className="text-xs bg-[var(--input-bg)] text-primary">
+                                            {category.count}
+                                        </Badge>
                                     </div>
                                 ))}
                             </CardContent>
                         </Card>
-                        {/* Price Range */}
-                        <Card className="gradient-card border-0 shadow-lg">
+                        <Card className="gradient-card border-0 shadow-[0_0_07px_rgba(0,0,0,0.2)]">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">Цена</CardTitle>
                             </CardHeader>
@@ -140,7 +148,7 @@ const HomePage = () => {
                             </CardContent>
                         </Card>
                         {/* Brands */}
-                        <Card className="gradient-card border-0 shadow-lg">
+                        <Card className="gradient-card border-0 shadow-[0_0_07px_rgba(0,0,0,0.2)]">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">Бренды</CardTitle>
                             </CardHeader>
@@ -223,15 +231,16 @@ const HomePage = () => {
                         </div>
 
 
-                        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+                        <div ref={productsRef} className="grid justify-center gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 250px)', scrollMarginTop: '180px' }}>
 
-                            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"> */}
-                            {products.map((product, idx) => (
-                                <ProductCard
-                                    key={product.id ?? product._id ?? `${product.name ?? 'product'}-${idx}`}
-                                    product={product}
-                                />
-                            ))}
+                            {products
+                                .filter((product) => product.quantity > 0)
+                                .map((product, idx) => (
+                                    <ProductCard
+                                        key={product.id ?? product._id ?? `${product.name ?? 'product'}-${idx}`}
+                                        product={product}
+                                    />
+                                ))}
                         </div>
 
                         <div className="text-center mt-8">

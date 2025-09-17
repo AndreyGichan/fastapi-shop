@@ -73,6 +73,7 @@ class ProductCreate(ProductBase):
 
 
 class ProductWithRating(ProductBase):
+    quantity: int
     average_rating: float | None = None
     reviews_count: int | None = None
 
