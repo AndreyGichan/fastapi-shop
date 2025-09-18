@@ -10,7 +10,7 @@ export function HeroSection({ onExplore }) {
                     <div className="space-y-10">
                         <div className="space-y-6">
                             <h2 className="text-6xl font-bold text-balance leading-tight">
-                                Премиальные <span className="text-gradient">технологии</span> для профессионалов
+                                Премиальные <span className="bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent">технологии</span>
                             </h2>
                             <p className="text-xl text-muted-foreground text-pretty leading-relaxed">
                                 Тщательно отобранные устройства и аксессуары от ведущих мировых производителей для тех, кто ценит
@@ -22,7 +22,7 @@ export function HeroSection({ onExplore }) {
                             <Button
                                 onClick={onExplore}
                                 size="lg"
-                                className="bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-primary-foreground px-8 py-4 text-lg rounded-xl emerald-glow hover:shadow-lg transition-all duration-300 group"
+                                className="bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 text-primary-foreground px-8 py-4 text-lg rounded-lg emerald-glow hover:shadow-lg transition-all duration-300 group"
                             >
                                 Исследовать каталог
                                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -30,7 +30,7 @@ export function HeroSection({ onExplore }) {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="border-2 border-primary/20 hover:bg-primary/5 hover:border-primary/40 px-8 py-4 text-lg rounded-xl bg-transparent transition-all duration-300"
+                                className="border-2 border-primary/20 hover:bg-primary/5 hover:border-primary/40 px-8 py-4 text-lg rounded-lg bg-transparent transition-all duration-300"
                             >
                                 Узнать больше
                             </Button>

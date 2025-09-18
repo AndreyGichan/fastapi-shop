@@ -90,7 +90,7 @@ export function AdminProducts() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold px-8">Управление товарами</h2>
-                <Button className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800" onClick={handleAddProduct}>
+                <Button className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900" onClick={handleAddProduct}>
                     <Plus className="h-4 w-4" />
                     Добавить товар
                 </Button>

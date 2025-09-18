@@ -71,7 +71,7 @@ const ProductCard = ({ product }) => {
                 e.stopPropagation();
                 addToCart(product.id, 1, product.name);
               }}
-              className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 transition-colors">
+              className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 transition-colors rounded-lg ">
               <ShoppingCart className="h-4 w-4 mr-2" />В корзину
             </Button>
           </div>

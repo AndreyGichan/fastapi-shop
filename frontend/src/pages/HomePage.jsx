@@ -14,6 +14,7 @@ import { useCart } from "../context/CartContext"
 
 
 const API_URL = process.env.REACT_APP_API_URL;
+const LIMIT = 12
 const MAX_PRICE = 5000
 const brands = [
     { id: "apple", label: "Apple", count: 45 },
@@ -32,9 +33,13 @@ const HomePage = () => {
     const [search, setSearch] = useState("")
     const [sortBy, setSortBy] = useState("")
     const [sortOrder, setSortOrder] = useState("desc")
+    const [minRating, setMinRating] = useState(0)
     const { cartItems } = useCart()
     const cartCount = cartItems.reduce((sum, i) => sum + (i.quantity || 0), 0)
     const productsRef = useRef(null);
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
+    const [selectedRatings, setSelectedRatings] = useState([]);
 
 
     useEffect(() => {
@@ -57,12 +62,59 @@ const HomePage = () => {
         if (priceRange[1]) params.append("max_price", priceRange[1])
         if (sortBy) params.append("sort_by", sortBy)
         if (sortOrder) params.append("sort_order", sortOrder)
+        if (minRating) params.append("min_rating", minRating)
+
+
+        params.append("limit", LIMIT.toString())
+        params.append("page", page.toString())
 
         fetch(`${API_URL}/products/?${params.toString()}`)
             .then((res) => res.json())
-            .then((data) => setProducts(data))
+            .then((data) => {
+                const items = Array.isArray(data) ? data : data.items || []
+
+                const filteredItems = items.filter(product =>
+                    product.quantity > 0 &&
+                    (selectedRatings.length === 0 || selectedRatings.some(r => product.average_rating >= r))
+                );
+
+                setProducts(filteredItems);
+                setHasMore(filteredItems.length === LIMIT);
+
+            })
+
             .catch((err) => console.error(err))
+    }, [search, selectedCategories, priceRange, minRating, sortBy, sortOrder, page, selectedRatings])
+
+    useEffect(() => {
+        setPage(1)
     }, [search, selectedCategories, priceRange, sortBy, sortOrder])
+
+    const handleSortChange = (e) => {
+        const value = e.target.value
+
+        if (value === "price_asc") {
+            setSortBy("price")
+            setSortOrder("asc")
+        } else if (value === "price_desc") {
+            setSortBy("price")
+            setSortOrder("desc")
+        } else if (value === "name_asc") {
+            setSortBy("name")
+            setSortOrder("asc")
+        } else if (value === "name_desc") {
+            setSortBy("name")
+            setSortOrder("desc")
+        } else if (value === "rating_desc") {
+            setSortBy("average_rating")
+            setSortOrder("desc")
+        } else {
+            setSortBy("")
+            setSortOrder("desc")
+        }
+        setPage(1)
+    }
+
 
     const handleCategoryChange = (category, checked) => {
         if (checked) {
@@ -70,7 +122,28 @@ const HomePage = () => {
         } else {
             setSelectedCategories(selectedCategories.filter((c) => c !== category))
         }
+        setPage(1)
     }
+
+    const handleRatingChange = (rating, checked) => {
+        if (checked) {
+            setSelectedRatings([...selectedRatings, rating]);
+        } else {
+            setSelectedRatings(selectedRatings.filter(r => r !== rating));
+        }
+        setPage(1);
+    };
+
+    const resetFilters = () => {
+        setSelectedCategories([]);
+        setPriceRange([0, 0]);
+        setSelectedRatings([]);
+        setSortBy("");
+        setSortOrder("desc");
+        setMinRating(0);
+        setPage(1);
+    };
+
 
     const renderStars = (rating) => {
         return [...Array(rating)].map((_, i) => (
@@ -147,45 +220,33 @@ const HomePage = () => {
                                 </div>
                             </CardContent>
                         </Card>
-                        {/* Brands */}
+
                         <Card className="gradient-card border-0 shadow-[0_0_07px_rgba(0,0,0,0.2)]">
                             <CardHeader>
-                                <CardTitle className="text-lg font-semibold">Бренды</CardTitle>
+                                <CardTitle className="text-lg font-semibold">Рейтинг товара</CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-3">
-                                {brands.map((brand) => (
-                                    <div
-                                        key={brand.id}
-                                        className="flex items-center justify-between p-2 rounded-lg hover:bg-primary/5 transition-colors cursor-pointer"
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <Checkbox id={brand.id} />
-                                            <label htmlFor={brand.name} className="text-sm font-medium cursor-pointer">
-                                                {brand.label}
-                                            </label>
-                                        </div>
-                                        <Badge variant="outline" className="text-xs">
-                                            {brand.count}
-                                        </Badge>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-
-                        {/* <div className="mb-6">
-                            <h4 className="font-medium mb-3">Рейтинг товара</h4>
-                            <div className="space-y-2">
-                                {[4, 3, 2, 1].map((rating) => (
+                            <CardContent className="space-y-2">
+                                {[5, 4, 3, 2, 1].map((rating) => (
                                     <div key={rating} className="flex items-center space-x-2">
-                                        <Checkbox id={`rating-${rating}`} />
+                                        <Checkbox
+                                            id={`rating-${rating}`}
+                                            checked={selectedRatings.includes(rating)}
+                                            onCheckedChange={(checked) => handleRatingChange(rating, checked)}
+                                        />
                                         <label htmlFor={`rating-${rating}`} className="flex items-center text-sm cursor-pointer">
                                             <span className="mr-1">от</span>
                                             <div className="flex">{renderStars(rating)}</div>
                                         </label>
                                     </div>
                                 ))}
-                            </div>
-                        </div> */}
+                            </CardContent>
+                        </Card>
+                        <Button
+                            onClick={resetFilters}
+                            className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium transition-all"
+                        >
+                            Сбросить фильтры
+                        </Button>
                     </aside>
 
                     <main className="flex-1">
@@ -195,43 +256,26 @@ const HomePage = () => {
                                 <p className="text-muted-foreground mt-2">Лучшие предложения для вас</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <Badge variant="outline" className="text-sm">
-                                    {`1-24 из 1,000+ товаров`}
-                                </Badge>
                                 <select
-                                    className="border rounded-md px-3 py-1 text-sm"
-                                    value={`${sortBy}_${sortOrder}`}
-                                    onChange={(e) => {
-                                        const value = e.target.value
-                                        if (value === "price_asc") {
-                                            setSortBy("price")
-                                            setSortOrder("asc")
-                                        } else if (value === "price_desc") {
-                                            setSortBy("price")
-                                            setSortOrder("desc")
-                                        } else if (value === "name_asc") {
-                                            setSortBy("name")
-                                            setSortOrder("asc")
-                                        } else if (value === "name_desc") {
-                                            setSortBy("name")
-                                            setSortOrder("desc")
-                                        } else {
-                                            setSortBy("")
-                                            setSortOrder("desc")
-                                        }
-                                    }}
+                                    className="bg-gradient-to-r from-purple-800 to-purple-950 text-white 
+             px-4 py-2 rounded-xl shadow-md text-sm font-medium 
+             hover:from-purple-700 hover:to-purple-900 transition-all 
+             focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    value={sortBy === "average_rating" ? "rating_desc" : `${sortBy}_${sortOrder}`}
+                                    onChange={handleSortChange}
                                 >
-                                    <option value="">Без сортировки</option>
-                                    <option value="price_asc">Цена: по возрастанию</option>
-                                    <option value="price_desc">Цена: по убыванию</option>
-                                    <option value="name_asc">Название: А-Я</option>
-                                    <option value="name_desc">Название: Я-А</option>
+                                    <option value="" className="text-black">Без сортировки</option>
+                                    <option value="price_asc" className="text-black">Цена: по возрастанию</option>
+                                    <option value="price_desc" className="text-black">Цена: по убыванию</option>
+                                    <option value="name_asc" className="text-black">Название: А-Я</option>
+                                    <option value="name_desc" className="text-black">Название: Я-А</option>
+                                    <option value="rating_desc" className="text-black">Рейтинг: по убыванию</option>
                                 </select>
                             </div>
                         </div>
 
 
-                        <div ref={productsRef} className="grid justify-center gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 250px)', scrollMarginTop: '180px' }}>
+                        <div ref={productsRef} className="grid justify-center gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 250px)', scrollMarginTop: '195px' }}>
 
                             {products
                                 .filter((product) => product.quantity > 0)
@@ -243,9 +287,23 @@ const HomePage = () => {
                                 ))}
                         </div>
 
-                        <div className="text-center mt-8">
-                            <Button variant="outline" className="px-8 bg-transparent">
-                                Загрузить еще товары
+                        <div className="flex justify-center gap-4 mt-8">
+                            <Button
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                className="bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 transition-colors"
+                                disabled={page === 1}
+                            >
+                                Предыдущая
+                            </Button>
+                            <span className="self-center text-sm text-gray-600">
+                                Страница {page}
+                            </span>
+                            <Button
+                                onClick={() => setPage((p) => p + 1)}
+                                className="bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 transition-colors"
+                                disabled={!hasMore}
+                            >
+                                Следующая
                             </Button>
                         </div>
                     </main>

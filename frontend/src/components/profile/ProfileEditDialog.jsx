@@ -115,7 +115,7 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                     </Button>
                     <Button
                         onClick={handleSubmit}
-                        className="px-6 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-white"
+                        className="px-6 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 text-white"
                     >
                         Сохранить изменения
                     </Button>

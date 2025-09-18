@@ -98,7 +98,7 @@ export function LoginForm() {
           </div>
 
 
-          <Button type="submit" className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800" disabled={loading}>
+          <Button type="submit" className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900" disabled={loading}>
             {loading ? "Входим..." : "Войти"}
           </Button>
 

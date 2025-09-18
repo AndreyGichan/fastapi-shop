@@ -119,7 +119,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }) {
 
 
                                 <div className="flex gap-3">
-                                    <Button onClick={handleAddToCart} className="flex-1 h-12 font-semibold bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-base text-primary-foreground transition-colors">
+                                    <Button onClick={handleAddToCart} className="flex-1 h-12 font-semibold bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 text-base text-primary-foreground transition-colors">
                                         <ShoppingCart className="h-5 w-5 mr-2" />В корзину
                                     </Button>
                                 </div>

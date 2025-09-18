@@ -40,7 +40,6 @@ export function CartItem({ item, setItems }) {
     <Card className="overflow-hidden bg-background">
       <CardContent className="p-6">
         <div className="flex gap-4">
-          {/* Product Image */}
           <div className="relative w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
             <img
               src={`${API_URL}${item.image_url}` || "/placeholder.svg"}
@@ -49,12 +48,10 @@ export function CartItem({ item, setItems }) {
             />
           </div>
 
-          {/* Product Info */}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.name}</h3>
             <p className="text-xl font-bold mb-3">{item.price.toLocaleString()} р.</p>
 
-            {/* Quantity Controls */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Button variant="outline" size="icon" className="h-8 w-8 border border-gray-200 bg-transparent" onClick={() => handleQuantityChange(item.quantity - 1)}>

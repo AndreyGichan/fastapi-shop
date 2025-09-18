@@ -23,10 +23,18 @@ def get_products(
     min_price: float | None = Query(
         None, ge=0, description="Фильтр по минимальной цене"
     ),
+    min_rating: float | None = Query(
+        None, ge=0, le=5, description="Минимальный рейтинг"
+    ),
+    max_rating: float | None = Query(
+        None, ge=0, le=5, description="Максимальный рейтинг"
+    ),
     in_stock: bool = Query(None, description="Фильтр по наличию товара"),
     categories: list[str] = Query(None, description="Фильтр по категориям"),
     sort_by: str | None = Query(None, description="Поле для сортировки"),
     sort_order: str = Query("desc", description="Порядок сортировки"),
+    limit: int = Query(14, ge=1, le=100, description="Количество товаров на странице"),
+    page: int = Query(1, ge=1, description="Номер страницы"),
 ):
     if min_price is not None and max_price is not None and min_price > max_price:
         raise HTTPException(
@@ -63,8 +71,18 @@ def get_products(
         .group_by(models.Product.id)
     )
 
+    # Фильтрация по рейтингу
+    if min_rating is not None:
+        query = query.having(
+            func.coalesce(func.avg(models.ProductReview.rating), 0) >= min_rating
+        )
+    if max_rating is not None:
+        query = query.having(
+            func.coalesce(func.avg(models.ProductReview.rating), 0) <= max_rating
+        )
+
     if sort_by:
-        if sort_by not in ALLOWED_SORT_FIELDS:
+        if sort_by not in ALLOWED_SORT_FIELDS | {"average_rating", "reviews_count"}:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Недопустимое поле сортировки: {sort_by}",
@@ -81,7 +99,10 @@ def get_products(
     else:
         query = query.order_by(models.Product.id)
 
-    products = query.all()
+    # products = query.all()
+
+    offset = (page - 1) * limit
+    products = query.offset(offset).limit(limit).all()
 
     result = []
     for product, avg_rating, reviews_count in products:

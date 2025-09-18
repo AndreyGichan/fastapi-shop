@@ -3,7 +3,7 @@ import { Button } from "../ui/Button";
 import { Card, CardContent } from "../ui/Card";
 import { Input } from "../ui/Input";
 import { Badge } from "../ui/Badge";
-import { Search, Package, Eye, Edit } from "lucide-react";
+import { Search, Package, Eye, Edit, RotateCcw } from "lucide-react";
 import { getOrdersForAdmin } from "../../lib/api";
 import { useToast } from "../ui/useToast";
 import { OrderStatusDialog } from "./OrderStatusDialog";
@@ -44,12 +44,14 @@ export function AdminOrders() {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const { toast } = useToast();
     const [isReadOnly, setIsReadOnly] = useState(false);
+    const [sortDesc, setSortDesc] = useState(true);
 
     useEffect(() => {
         async function fetchOrders() {
             try {
                 const data = await getOrdersForAdmin();
-                setOrders(data || []);
+                const ordersData = data || [];
+                sortOrders(ordersData, sortDesc);
             } catch (err) {
                 console.error(err);
                 toast({
@@ -60,7 +62,25 @@ export function AdminOrders() {
             }
         }
         fetchOrders();
-    }, [toast]);
+    }, [toast, sortDesc]);
+
+    const sortOrders = (ordersList, desc) => {
+        const sorted = [...ordersList].sort((a, b) =>
+            desc
+                ? new Date(b.created_at) - new Date(a.created_at)
+                : new Date(a.created_at) - new Date(b.created_at)
+        );
+        setOrders(sorted);
+    };
+
+    const toggleSort = () => {
+        setSortDesc(prev => {
+            const newValue = !prev;
+            sortOrders(orders, newValue);
+            return newValue;
+        });
+    };
+
 
     const filteredOrders = orders.filter((order) =>
         String(order.id).toLowerCase().includes(searchTerm.toLowerCase())
@@ -96,19 +116,24 @@ export function AdminOrders() {
         setEditingOrder(null);
     };
 
-    // const handleCloseDialog = () => {
-    //     setIsEditDialogOpen(false);
-    //     setEditingOrder(null);
-    // };
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold px-8">Управление заказами</h2>
+                {orders.length > 0 && (
+                    <Button
+                        onClick={toggleSort}
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
+                    >
+                        <RotateCcw className="h-4 w-4" />
+                        {sortDesc ? "Старые сверху" : "Новые сверху"}
+                    </Button>
+                )}
             </div>
 
-            {/* Search */}
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
@@ -119,7 +144,7 @@ export function AdminOrders() {
                 />
             </div>
 
-            {/* Orders List */}
+
             <div className="space-y-4">
                 {filteredOrders.length === 0 && (
                     <p className="text-center text-muted-foreground">Нет заказов</p>

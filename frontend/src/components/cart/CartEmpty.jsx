@@ -17,7 +17,7 @@ export function CartEmpty() {
         </p>
 
         <Link to="/">
-          <Button size="lg" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800">
+          <Button size="lg" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900">
             <ShoppingCart className="h-4 w-4" />
             Перейти к покупкам
           </Button>

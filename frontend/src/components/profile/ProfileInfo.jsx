@@ -44,7 +44,7 @@ export function ProfileInfo() {
             <User className="h-5 w-5 text-primary" />
             Личная информация
           </CardTitle>
-          <Button variant="outline" size="sm" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800 text-white" onClick={() => setIsEditDialogOpen(true)}>
+          <Button variant="outline" size="sm" className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900 text-white" onClick={() => setIsEditDialogOpen(true)}>
             <Edit className="h-4 w-4" />
             Редактировать
           </Button>

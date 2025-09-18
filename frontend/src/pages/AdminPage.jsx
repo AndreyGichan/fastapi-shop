@@ -15,13 +15,11 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-100">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-20 py-8">
 
         <div className="grid lg:grid-cols-4 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-3">
             <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-800 to-purple-950 p-4 mb-6">
-              {/* Gradient overlay */}
               <div className="relative flex items-center gap-4">
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-white mb-2 tracking-tight px-4">Админ-панель</h1>

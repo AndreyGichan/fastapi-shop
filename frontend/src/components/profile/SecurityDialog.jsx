@@ -85,7 +85,6 @@ export function SecurityDialog({ isOpen, onClose }) {
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden">
-                {/* Header */}
                 <div className="relative bg-gradient-to-r from-red-500 to-orange-600 p-6 text-white">
                     <div className="relative flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -103,10 +102,8 @@ export function SecurityDialog({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Current Password */}
                         <div className="space-y-2">
                             <Label htmlFor="currentPassword" className="flex items-center gap-2 text-sm font-medium">
                                 <Lock className="h-4 w-4 text-red-600" /> Текущий пароль
@@ -127,7 +124,6 @@ export function SecurityDialog({ isOpen, onClose }) {
                             {errors.currentPassword && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.currentPassword}</p>}
                         </div>
 
-                        {/* New Password */}
                         <div className="space-y-2">
                             <Label htmlFor="newPassword" className="flex items-center gap-2 text-sm font-medium">
                                 <Lock className="h-4 w-4 text-red-600" /> Новый пароль
@@ -145,7 +141,6 @@ export function SecurityDialog({ isOpen, onClose }) {
                                     {showPasswords.new ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                                 </Button>
                             </div>
-                            {/* Password Strength */}
                             {formData.newPassword && (
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -167,8 +162,6 @@ export function SecurityDialog({ isOpen, onClose }) {
                             )}
                             {errors.newPassword && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.newPassword}</p>}
                         </div>
-
-                        {/* Confirm Password */}
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword" className="flex items-center gap-2 text-sm font-medium">
                                 <CheckCircle className="h-4 w-4 text-red-600" /> Подтвердите новый пароль
@@ -189,7 +182,6 @@ export function SecurityDialog({ isOpen, onClose }) {
                             {errors.confirmPassword && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.confirmPassword}</p>}
                         </div>
 
-                        {/* Security Tips */}
                         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-xs text-orange-700">
                             <p className="font-medium mb-1">Рекомендации для безопасного пароля:</p>
                             <ul className="list-disc list-inside space-y-1">
@@ -203,8 +195,10 @@ export function SecurityDialog({ isOpen, onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t bg-gray-50 px-6 py-4 flex justify-end gap-3">
-                    <Button type="button" variant="outline" onClick={onClose} className="px-6 bg-transparent">
+                <div className="border bg-gray-50 px-6 py-4 flex justify-end gap-3">
+                    <Button type="button" variant="outline" onClick={onClose} className="px-6 border-gray-200 bg-transparent
+             hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:text-white
+             focus:outline-none focus:ring-0 transition-all">
                         Отмена
                     </Button>
                     <Button onClick={handleSubmit} className="px-6 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white flex items-center">

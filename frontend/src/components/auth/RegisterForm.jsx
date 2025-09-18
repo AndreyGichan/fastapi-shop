@@ -192,7 +192,7 @@ export function RegisterForm() {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-500 hover:to-purple-800">
+                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900">
                         Зарегистрироваться
                     </Button>
                 </form>

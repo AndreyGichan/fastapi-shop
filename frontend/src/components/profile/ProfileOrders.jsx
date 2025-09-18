@@ -67,7 +67,6 @@ export function ProfileOrders() {
   };
 
   const handleSubmitRating = ({ productId, rating }) => {
-    // обновляем UI: сразу скрываем кнопку для этого продукта
     setOrders((prevOrders) =>
       prevOrders.map((order) => ({
         ...order,

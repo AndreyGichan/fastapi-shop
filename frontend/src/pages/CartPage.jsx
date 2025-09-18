@@ -78,31 +78,6 @@ export default function CartPage() {
                     <div className="grid lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
 
-                            {!isAuthenticated && (
-                                <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                                        Войдите, чтобы продолжить
-                                    </h2>
-                                    <p className="text-muted-foreground mb-8 max-w-md text-lg">
-                                        Чтобы просматривать корзину и оформлять заказы, необходимо авторизоваться в системе
-                                    </p>
-                                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                                        <Link to="/login">
-                                            <Button
-                                                size="lg"
-                                                className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-                                            >
-                                                Войти в аккаунт
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </div>
-
-                            )}
-
-
-
-
                             {isAuthenticated && !isEmpty && (
                                 <div className="space-y-4">
                                     {cartItems.map((item) => (
@@ -112,12 +87,35 @@ export default function CartPage() {
                             )}
                         </div>
 
+
                         {isAuthenticated && !isEmpty && (
                             <div className="lg:col-span-1">
                                 <CartSummary items={cartItems} />
                             </div>
                         )}
                     </div>
+
+                    {!isAuthenticated && (
+                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-800 to-purple-950 bg-clip-text text-transparent">
+                                Войдите, чтобы продолжить
+                            </h2>
+                            <p className="text-muted-foreground mb-8 max-w-md text-lg">
+                                Чтобы просматривать корзину и оформлять заказы, необходимо авторизоваться в системе
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                                <Link to="/login">
+                                    <Button
+                                        size="lg"
+                                        className="gap-2 bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 hover:to-purple-900"
+                                    >
+                                        Войти в аккаунт
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                    )}
 
                     {isAuthenticated && isEmpty && (
                         <div className="justify-center px-20">
