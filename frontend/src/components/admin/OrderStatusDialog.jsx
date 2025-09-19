@@ -47,7 +47,6 @@ export function OrderStatusDialog({ order, open, onOpenChange, onSave, readOnly 
             onClick={handleBackdropClick}
         >
             <div className="relative w-full max-w-4xl max-h-[90vh] mx-4 bg-background rounded-xl shadow-2xl overflow-hidden border border-border/50">
-                {/* Modern gradient header */}
                 <div className="gradient-header p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div>

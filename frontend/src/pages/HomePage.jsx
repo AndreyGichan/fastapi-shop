@@ -16,13 +16,6 @@ import { useCart } from "../context/CartContext"
 const API_URL = process.env.REACT_APP_API_URL;
 const LIMIT = 12
 const MAX_PRICE = 5000
-const brands = [
-    { id: "apple", label: "Apple", count: 45 },
-    { id: "samsung", label: "Samsung", count: 67 },
-    { id: "logitech", label: "Logitech", count: 89 },
-    { id: "razer", label: "Razer", count: 34 },
-    { id: "asus", label: "ASUS", count: 56 },
-]
 
 const HomePage = () => {
     const [categories, setCategories] = useState([])

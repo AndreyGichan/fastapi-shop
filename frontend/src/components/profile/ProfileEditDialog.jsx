@@ -36,7 +36,6 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-                {/* Header */}
                 <div className="relative bg-gradient-to-r from-purple-800 to-purple-950 p-6 text-white">
                     <div className="relative flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -55,12 +54,8 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                 </div>
 
 
-
-
-                {/* Content */}
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* First Name */}
                         <div className="space-y-2">
                             <Label htmlFor="firstName" className="flex items-center gap-2 text-sm font-medium">
                                 <User className="h-4 w-4 text-purple-800" />
@@ -75,7 +70,6 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                             />
                         </div>
 
-                        {/* Last Name */}
                         <div className="space-y-2">
                             <Label htmlFor="lastName" className="flex items-center gap-2 text-sm font-medium">
                                 <User className="h-4 w-4 text-purple-800" />
@@ -90,7 +84,6 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                             />
                         </div>
 
-                        {/* Email */}
                         <div className="space-y-2">
                             <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
                                 <Mail className="h-4 w-4 text-purple-800" />
@@ -108,7 +101,6 @@ export function ProfileEditDialog({ isOpen, onClose, userData, onSave }) {
                     </form>
                 </div>
 
-                {/* Footer */}
                 <div className="border-t bg-gray-50 px-6 py-4 flex justify-end gap-3">
                     <Button type="button" variant="outline" onClick={onClose} className="px-6 bg-transparent border-gray-200 hover:bg-gradient-to-r hover:from-purple-400 hover:to-purple-600 hover:text-white">
                         Отмена

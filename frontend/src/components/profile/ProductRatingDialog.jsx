@@ -56,15 +56,12 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/50"
                 onClick={handleClose}
             />
 
-            {/* Modal content */}
             <div className="relative z-10 max-w-md w-full bg-white rounded-lg shadow-lg p-6">
-                {/* Header */}
                 <div className="flex items-center gap-2 mb-4">
                     <Star className="h-5 w-5 text-yellow-500" />
                     <h3 className="text-lg font-semibold">Оценить товар</h3>
@@ -76,7 +73,6 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
                     </button>
                 </div>
 
-                {/* Product info */}
                 <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 mb-6">
                     <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden border">
                         <img
@@ -91,9 +87,7 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
                     </div>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Star rating */}
                     <div className="space-y-2">
                         <Label className="text-sm font-medium">Ваша оценка</Label>
                         <div className="flex items-center gap-1">
@@ -125,21 +119,6 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
                         </p>
                     </div>
 
-                    {/* <div className="space-y-2">
-                        <Label htmlFor="review" className="text-sm font-medium">
-                            Отзыв (необязательно)
-                        </Label>
-                        <Textarea
-                            id="review"
-                            value={review}
-                            onChange={(e) => setReview(e.target.value)}
-                            placeholder="Поделитесь своим мнением о товаре..."
-                            rows={4}
-                            className="resize-none"
-                        />
-                    </div> */}
-
-                    {/* Buttons */}
                     <div className="flex justify-end gap-3 pt-4 border-t">
                         <Button type="button" variant="outline" onClick={handleClose} className="border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-md">
                             Отмена

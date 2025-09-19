@@ -2,21 +2,6 @@ const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('token');
-  // const headers = {
-  //   'Content-Type': 'application/json',
-  //   ...(options.headers || {}),
-  // };
-
-  // if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
-  //   headers['Content-Type'] = 'application/json';
-  //   options.body = JSON.stringify(options.body);
-  // }
-  // if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  // const res = await fetch(`${API_URL}${path}`, {
-  //   ...options,
-  //   headers,
-  // });
 
   const headers = options.body instanceof FormData
     ? { ...(token ? { Authorization: `Bearer ${token}` } : {}) }

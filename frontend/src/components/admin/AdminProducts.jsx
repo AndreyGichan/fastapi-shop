@@ -63,10 +63,8 @@ export function AdminProducts() {
 
     const handleSaveProduct = (updatedProduct) => {
         if (selectedProduct) {
-            // Update existing product
             setProducts(products.map(p => (p.id === updatedProduct.id ? updatedProduct : p)))
         } else {
-            // Add new product
             const newProduct = { ...updatedProduct, id: Math.max(...products.map(p => p.id)) + 1 }
             setProducts([...products, newProduct])
         }

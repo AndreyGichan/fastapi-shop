@@ -26,7 +26,7 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
               className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
               onClick={() => setDeliveryMethod("courier")}
             >
-              <Checkbox checked={deliveryMethod === "courier"} onChange={() => setDeliveryMethod("courier")} />
+              <Checkbox checked={deliveryMethod === "courier"} onCheckedChange={() => setDeliveryMethod("courier")} />
               <div className="flex-1">
                 <div className="font-medium">Курьерская доставка</div>
                 <div className="text-sm text-muted-foreground">1-2 дня, 20 р. (бесплатно от 1000 р.)</div>
@@ -37,7 +37,7 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
               className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
               onClick={() => setDeliveryMethod("pickup")}
             >
-              <Checkbox checked={deliveryMethod === "pickup"} onChange={() => setDeliveryMethod("pickup")} />
+              <Checkbox checked={deliveryMethod === "pickup"} onCheckedChange={() => setDeliveryMethod("pickup")} />
               <div className="flex-1">
                 <div className="font-medium">Самовывоз</div>
                 <div className="text-sm text-muted-foreground">Сегодня, бесплатно</div>
@@ -78,7 +78,7 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
             {(inputProps, ref) => (
               <Input
                 {...inputProps}
-                ref={ref} // важно! теперь findDOMNode не нужен
+                ref={ref}
                 placeholder="+375 (29) 999-99-99"
                 className="border border-gray-200 rounded-lg p-3"
               />
@@ -100,10 +100,10 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
               className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
               onClick={() => setPaymentMethod("card")}
             >
-              <Checkbox checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} />
+              <Checkbox checked={paymentMethod === "card"} onCheckedChange={() => setPaymentMethod("card")} />
               <div className="flex-1">
                 <div className="font-medium">Банковская карта</div>
-                <div className="text-sm text-muted-foreground">Visa, MasterCard, МИР</div>
+                <div className="text-sm text-muted-foreground">Visa, MasterCard</div>
               </div>
             </div>
 
@@ -111,7 +111,7 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
               className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
               onClick={() => setPaymentMethod("cash")}
             >
-              <Checkbox checked={paymentMethod === "cash"} onChange={() => setPaymentMethod("cash")} />
+              <Checkbox checked={paymentMethod === "cash"} onCheckedChange={() => setPaymentMethod("cash")} />
               <div className="flex-1">
                 <div className="font-medium">Наличными при получении</div>
                 <div className="text-sm text-muted-foreground">Оплата курьеру или в пункте выдачи</div>

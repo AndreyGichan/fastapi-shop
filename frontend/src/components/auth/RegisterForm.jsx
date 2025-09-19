@@ -41,7 +41,6 @@ export function RegisterForm() {
             });
 
             console.log("Успешная регистрация:", newUser);
-            // Можно редиректить на /login или сразу логинить
 
             const loginData = await login({
                 email: formData.email,
@@ -51,7 +50,6 @@ export function RegisterForm() {
             setIsAuthenticated(true);
             setUserRole(loginData.role || null);
 
-            // Перенаправление
             if (loginData.role === "admin") navigate("/admin");
             else navigate("/");
         } catch (err) {

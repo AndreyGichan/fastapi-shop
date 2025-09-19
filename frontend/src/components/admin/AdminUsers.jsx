@@ -56,7 +56,6 @@ export function AdminUsers() {
         u.id === updatedUser.id ? { ...u, ...updatedUser } : u
       ));
     } else {
-      // добавляем нового (если нужно)
       const newUser = {
         ...updatedUser,
         id: Math.max(...users.map((u) => u.id), 0) + 1,
@@ -77,12 +76,10 @@ export function AdminUsers() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold px-8">Управление пользователями</h2>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
@@ -93,7 +90,6 @@ export function AdminUsers() {
         />
       </div>
 
-      {/* Users List */}
       <div className="space-y-4">
         {filteredUsers.length === 0 && (
           <p className="text-center text-muted-foreground">Нет пользователей</p>
@@ -109,20 +105,17 @@ export function AdminUsers() {
             <Card key={user?.id} className="bg-background">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
-                  {/* Аватар */}
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                     <span className="font-semibold text-primary">
                       {initials}
                     </span>
                   </div>
 
-                  {/* Инфо */}
                   <div className="flex-1">
                     <h3 className="font-semibold">{user?.username || "Без имени"} {user?.last_name || ""}</h3>
                     <p className="text-sm text-muted-foreground">ID: {user?.id}</p>
 
 
-                    {/* Контакты */}
                     <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
@@ -136,7 +129,6 @@ export function AdminUsers() {
                       )}
                     </div>
 
-                    {/* Статистика */}
                     <div className="flex items-center gap-4 mt-2">
                       <span className="text-sm">Заказов: {user?.orders ?? 0}</span>
                       <span className="text-sm">
@@ -145,7 +137,6 @@ export function AdminUsers() {
                     </div>
                   </div>
 
-                  {/* Действия */}
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleViewUser(user)}>
                       <Eye className="h-4 w-4" />
@@ -169,7 +160,6 @@ export function AdminUsers() {
         })}
       </div>
 
-      {/* User Edit Dialog */}
       <UserEditDialog
         user={selectedUser}
         open={editDialogOpen}

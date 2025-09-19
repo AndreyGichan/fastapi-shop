@@ -15,7 +15,6 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSea
     <header className="sticky top-0 z-50 w-full border-b-2 border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-purple-800 to-purple-950 rounded-xl flex items-center justify-center shadow-sm">
               <span className="text-primary-foreground font-bold text-xl">T</span>
@@ -23,7 +22,6 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSea
             <h1 className="text-3xl font-bold text-foreground tracking-tight">TechStore</h1>
           </Link>
 
-          {/* Search Bar */}
           {showSearch && (
             <div className="hidden md:flex flex-1 max-w-lg mx-12">
               <div className="relative w-full">
@@ -38,7 +36,6 @@ export function Header({ sidebarOpen, setSidebarOpen, search, setSearch, showSea
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex items-center space-x-2">
             <Link to="/cart">
               <Button

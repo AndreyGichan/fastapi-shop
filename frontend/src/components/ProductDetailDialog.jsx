@@ -53,7 +53,6 @@ export function ProductDetailDialog({ product, open, onOpenChange }) {
                         </div>
                     </div>
 
-                    {/* Product Details Section */}
                     <div className="lg:w-[60%] flex flex-col max-h-[85vh] overflow-y-auto">
                         <div className="p-6 border-b bg-white">
                             <DialogHeader className="space-y-2">

@@ -10,7 +10,7 @@ export function CartItem({ item, setItems }) {
   const [quantity, setQuantity] = useState(item.quantity)
 
   useEffect(() => {
-    setQuantity(item.quantity) // синхронизируем при изменении item
+    setQuantity(item.quantity) 
   }, [item.quantity])
 
   const handleQuantityChange = async (newQty) => {

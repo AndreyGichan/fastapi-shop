@@ -194,7 +194,6 @@ export function SecurityDialog({ isOpen, onClose }) {
                     </form>
                 </div>
 
-                {/* Footer */}
                 <div className="border bg-gray-50 px-6 py-4 flex justify-end gap-3">
                     <Button type="button" variant="outline" onClick={onClose} className="px-6 border-gray-200 bg-transparent
              hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:text-white

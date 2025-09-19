@@ -29,7 +29,6 @@ export function AuthForm({ mode = 'login', onSuccess, onSwitchMode }) {
 
         try {
             if (mode === 'register') {
-                // Валидация регистрации
                 if (formData.password !== formData.confirmPassword) {
                     throw new Error('Пароли не совпадают')
                 }
@@ -44,12 +43,10 @@ export function AuthForm({ mode = 'login', onSuccess, onSwitchMode }) {
                 }
 
                 const response = await authAPI.register(userData)
-                // После успешной регистрации автоматически логинимся
                 const loginResponse = await authAPI.login(formData.email, formData.password)
                 localStorage.setItem('access_token', loginResponse.access_token)
                 onSuccess?.()
             } else {
-                // Логин
                 const response = await authAPI.login(formData.email, formData.password)
                 localStorage.setItem('access_token', response.access_token)
                 onSuccess?.()

@@ -49,7 +49,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
         })
         setImagePreview(product?.image_url ? `${API_URL}${product.image_url}` : "")
         setErrors({})
-        // if there's no product or product has no category - show "Новая категория" input by default
         setIsNewCategory(!product || !product?.category)
     }, [product])
 
@@ -95,11 +94,9 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             return;
         }
 
-        // Сохраняем реальный файл для отправки
         setFormData(prev => ({ ...prev, image: file }))
         clearError("image")
 
-        // Для превью используем FileReader
         const reader = new FileReader();
         reader.onload = (e) => setImagePreview(e.target.result);
         reader.readAsDataURL(file);
@@ -126,28 +123,21 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
     const validateForm = () => {
         const newErrors = {};
 
-        // Название
         if (!formData.name.trim()) newErrors.name = "Название товара обязательно";
         else if (formData.name.length < 3) newErrors.name = "Название должно содержать минимум 3 символа";
 
-        // Категория
         if (!formData.category) newErrors.category = "Категория обязательна";
 
-        // Цена
         if (formData.price <= 0) newErrors.price = "Цена должна быть больше 0";
 
-        // Количество
         if (formData.quantity < 0) newErrors.quantity = "Количество не может быть отрицательным";
 
-        // Старая цена
         if (formData.originalPrice && formData.originalPrice <= formData.price)
             newErrors.originalPrice = "Старая цена должна быть больше текущей цены";
 
-        // Скидка
         if (formData.discount && (formData.discount < 0 || formData.discount > 100))
             newErrors.discount = "Скидка должна быть от 0 до 100%";
 
-        // Рассчитываем скидку автоматически, если нужно
         if (formData.originalPrice && formData.price && !formData.discount) {
             const calculatedDiscount = Math.round(
                 ((formData.originalPrice - formData.price) / formData.originalPrice) * 100
@@ -155,7 +145,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             setFormData(prev => ({ ...prev, discount: calculatedDiscount }));
         }
 
-        // Изображение
         if (!formData.image && !product?.image_url)
             newErrors.image = "Необходимо загрузить изображение или указать ссылку";
 
@@ -184,7 +173,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                 dataToSend.append("discount", formData.discount);
             }
 
-            // Изображение
             if (formData.image) dataToSend.append("image", formData.image)
             console.log("=== Sending FormData ===");
             for (let pair of dataToSend.entries()) {
@@ -192,14 +180,12 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             }
 
             let savedProduct;
-            // Проверяем существующий товар по id > 0
             if (formData.id && formData.id > 0) {
                 savedProduct = await updateProduct(formData.id, dataToSend);
             } else {
                 savedProduct = await createProduct(dataToSend);
             }
 
-            // Возвращаем результат родительскому компоненту
             onSave(savedProduct);
         } catch (error) {
             console.error("Ошибка при сохранении товара:", error);
@@ -210,7 +196,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
 
 
     const handleCancel = () => {
-        // Сбросим форму к исходным значениям
         setFormData({
             id: product?.id || 0,
             name: product?.name || "",
@@ -227,17 +212,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
         onCancel?.();
     };
 
-    // const categories = [
-    //     "Ноутбуки",
-    //     "Смартфоны",
-    //     "Планшеты",
-    //     "Наушники",
-    //     "Клавиатуры",
-    //     "Мониторы",
-    //     "Мыши",
-    //     "Аксессуары",
-    // ]
-    //const badges = ["", "Хит продаж", "Новинка", "Рекомендуем", "Скидка", "Эксклюзив"]
     const tabs = [
         { id: "details", label: "Детали", icon: Info },
         { id: "pricing", label: "Цены", icon: DollarSign },
@@ -247,7 +221,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
 
     return (
         <div className="p-6 space-y-6">
-            {/* Tabs */}
             <div className="flex space-x-1 p-1 rounded-lg">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -334,7 +307,6 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                         <option value="__new__">Новая категория...</option>
                                     </select>
 
-                                    {/* Поле ввода для новой категории */}
                                     {isNewCategory && (
                                         <Input
                                             type="text"
@@ -371,25 +343,10 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                 />
                             </div>
 
-                            {/* <div className="space-y-2">
-                                <Label htmlFor="badge">Бейдж</Label>
-                                <select
-                                    id="badge"
-                                    value={formData.badge}
-                                    onChange={(e) => handleInputChange("badge", e.target.value)}
-                                >
-                                    {badges.map((badge) => (
-                                        <option key={badge} value={badge}>
-                                            {badge || "Без бейджа"}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div> */}
                         </CardContent>
                     </Card>
                 )}
 
-                {/* Pricing Tab */}
                 {activeTab === "pricing" && (
                     <Card className="border-0 shadow-[0_0_10px_rgba(0,0,0,0.2)] ">
                         <CardHeader className="pb-4">

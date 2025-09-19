@@ -43,7 +43,6 @@ export function ProfileSettings() {
     return (
         <>
             <div className="space-y-6">
-                {/* Account Stats */}
                 <Card className="bg-background">
                     <CardHeader>
                         <CardTitle className="text-lg">Статистика</CardTitle>
@@ -61,7 +60,6 @@ export function ProfileSettings() {
                     </CardContent>
                 </Card>
 
-                {/* Quick Actions */}
                 <Card className="bg-background">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -74,14 +72,6 @@ export function ProfileSettings() {
                             <Shield className="h-4 w-4" />
                             Безопасность
                         </Button>
-                        {/* <Button variant="ghost" className="w-full justify-start gap-3">
-                        <CreditCard className="h-4 w-4" />
-                        Способы оплаты
-                    </Button> */}
-                        {/* <Button variant="ghost" className="w-full justify-start gap-3">
-                        <Gift className="h-4 w-4" />
-                        Бонусная программа
-                    </Button> */}
 
                         <Separator className="my-4" />
 

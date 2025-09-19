@@ -80,10 +80,8 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
         try {
             await updateOrderStatus(order.id, formData);
 
-            // Обновляем локальный объект заказа с новым статусом
             const updatedOrder = { ...order, status: formData.status };
 
-            // Передаем обновленный объект дальше
             onSave(updatedOrder);
         } catch (error) {
             console.error("Ошибка сохранения заказа:", error)
@@ -102,7 +100,6 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
 
     return (
         <div className="p-6 space-y-6">
-            {/* Tabs */}
             <div className="flex space-x-1 bg-muted/50 p-1 rounded-lg">
                 {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -123,7 +120,6 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Errors */}
                 {Object.keys(errors).length > 0 && (
                     <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
                         <AlertCircle className="h-4 w-4" />
@@ -186,7 +182,6 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                     </Card>
                 )}
 
-                {/* Status Tab */}
                 {activeTab === "status" && (
                     <Card className="border-0 shadow-lg">
                         <CardHeader className="pb-4">
@@ -196,7 +191,6 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {/* Current Status */}
                             {currentStatus && (
                                 <div
                                     className={`flex items-center gap-2 p-3 rounded-lg border ${currentStatus.borderColor} ${currentStatus.bgColor} mb-4`}
@@ -206,7 +200,6 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                                 </div>
                             )}
 
-                            {/* Status Selection */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 
                                 {statusOptions.map((status) => {
@@ -250,24 +243,10 @@ export function OrderStatusForm({ order, onSave, onCancel, readOnly = false }) {
                                     )
                                 })}
                             </div>
-
-
-
-                            {/* Notes */}
-                            {/* <div className="space-y-2 mt-4">
-                                <Label htmlFor="notes">Комментарий</Label>
-                                <Textarea
-                                    id="notes"
-                                    value={formData.notes}
-                                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                                    rows={3}
-                                />
-                            </div> */}
                         </CardContent>
                     </Card>
                 )}
 
-                {/* Form Actions */}
                 <div className="flex justify-end gap-4 pt-6 border-t border-border/50">
                     {!readOnly && (
                         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>

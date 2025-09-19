@@ -29,7 +29,7 @@ def get_products(
     max_rating: float | None = Query(
         None, ge=0, le=5, description="Максимальный рейтинг"
     ),
-    in_stock: bool = Query(None, description="Фильтр по наличию товара"),
+    in_stock: bool = Query(True, description="Фильтр по наличию товара"),
     categories: list[str] = Query(None, description="Фильтр по категориям"),
     sort_by: str | None = Query(None, description="Поле для сортировки"),
     sort_order: str = Query("desc", description="Порядок сортировки"),
@@ -71,7 +71,6 @@ def get_products(
         .group_by(models.Product.id)
     )
 
-    # Фильтрация по рейтингу
     if min_rating is not None:
         query = query.having(
             func.coalesce(func.avg(models.ProductReview.rating), 0) >= min_rating
@@ -371,8 +370,6 @@ def delete_product(
 @router.post("/cart", status_code=status.HTTP_201_CREATED)
 def add_to_cart(
     payload: schemas.CartAdd = Body(...),
-    # product_id: int,
-    # quantity: int,
     db: Session = Depends(database.get_db),
     current_user: schemas.User = Depends(oauth2.get_current_user),
 ):
