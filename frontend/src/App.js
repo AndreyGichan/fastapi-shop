@@ -17,10 +17,10 @@ import { NoAdminRoute } from "./components/routes/NoAdminRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProviderWithHook>
-        <CartProvider>
-          <Router>
+    <Router>
+      <AuthProvider>
+        <ToastProviderWithHook>
+          <CartProvider>
             <div className="App">
               <Routes>
                 <Route
@@ -60,11 +60,10 @@ function App() {
                 />
               </Routes>
             </div>
-          </Router>
-        </CartProvider>
-
-      </ToastProviderWithHook>
-    </AuthProvider >
+          </CartProvider>
+        </ToastProviderWithHook>
+      </AuthProvider >
+    </Router>
   )
 }
 

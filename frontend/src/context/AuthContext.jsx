@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -6,6 +7,7 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,13 +26,10 @@ export function AuthProvider({ children }) {
         });
 
         if (res.status === 401) {
-          localStorage.removeItem("token");
-          setIsAuthenticated(false);
-          setUserRole(null);
+          handleLogout();
         } else if (!res.ok) {
           console.error("Ошибка при проверке токена:", res.statusText);
-          setIsAuthenticated(false);
-          setUserRole(null);
+          handleLogout();
         } else {
           const data = await res.json();
           setIsAuthenticated(true);
@@ -38,8 +37,7 @@ export function AuthProvider({ children }) {
         }
       } catch (err) {
         console.error("Ошибка проверки токена:", err);
-        setIsAuthenticated(false);
-        setUserRole(null);
+        handleLogout();
       } finally {
         setLoading(false);
       }
@@ -47,6 +45,14 @@ export function AuthProvider({ children }) {
 
     checkAuth();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setIsAuthenticated(false);
+    setUserRole(null);
+    navigate("/login");
+  };
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, userRole, setUserRole, loading }}>
