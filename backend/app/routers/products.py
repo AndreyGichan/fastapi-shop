@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi import Form, UploadFile, File
 import os
 from uuid import uuid4
+from ..services.supabase_client import upload_image_to_supabase
 
 ALLOWED_SORT_FIELDS = {"price", "name", "quantity"}
 
@@ -252,13 +253,15 @@ def create_product(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Недопустимый формат изображения. Разрешены: {', '.join(allowed_exts)}",
         )
-    file_name = f"{uuid4()}.{ext}"
-    file_path = os.path.join(upload_dir, file_name)
+    # file_name = f"{uuid4()}.{ext}"
+    # file_path = os.path.join(upload_dir, file_name)
 
-    with open(file_path, "wb") as buffer:
-        buffer.write(image.file.read())
+    # with open(file_path, "wb") as buffer:
+    #     buffer.write(image.file.read())
 
-    image_url = f"/static/images/{file_name}"
+    # image_url = f"/static/images/{file_name}"
+
+    image_url = upload_image_to_supabase(image.file, image.filename)
 
     new_product = models.Product(
         name=name,
@@ -327,13 +330,15 @@ def update_product(
                 detail=f"Недопустимый формат изображения. Разрешены: {', '.join(allowed_exts)}",
             )
 
-        file_name = f"{uuid4()}.{ext}"
-        file_path = os.path.join(upload_dir, file_name)
+        # file_name = f"{uuid4()}.{ext}"
+        # file_path = os.path.join(upload_dir, file_name)
 
-        with open(file_path, "wb") as buffer:
-            buffer.write(image.file.read())
+        # with open(file_path, "wb") as buffer:
+        #     buffer.write(image.file.read())
 
-        update_data["image_url"] = f"/{file_path}"
+        # update_data["image_url"] = f"/{file_path}"
+
+        update_data["image_url"] = upload_image_to_supabase(image.file, image.filename)
 
     product_query.update(update_data, synchronize_session=False)  # type: ignore
     db.commit()
