@@ -9,8 +9,6 @@ import { Star, Heart, ShoppingCart, Minus, Plus, Shield, Truck, RotateCcw, Award
 import { useCart } from "../context/CartContext";
 import { useToast } from "../components/ui/useToast";
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 export function ProductDetailDialog({ product, open, onOpenChange }) {
     const [quantity, setQuantity] = useState(1)
     const [selectedImage, setSelectedImage] = useState(0)
@@ -39,7 +37,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }) {
                             <div className="flex-1 min-h-0">
                                 <div className="relative w-full h-full max-h-72 lg:max-h-full overflow-hidden rounded-xl bg-white shadow-lg">
                                     <img
-                                        src={`${API_URL}${product.image_url}` || "/placeholder.svg"}
+                                        src={product.image_url || "/placeholder.svg"}
                                         alt={product.name}
                                         className="w-full h-full object-contain p-4"
                                     />

@@ -8,8 +8,6 @@ import { Star, Package } from "lucide-react"
 import { submitProductRating } from "../../lib/api";
 import { useToast } from "../ui/useToast";
 
-const API_URL = process.env.REACT_APP_API_URL || "";
-
 export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }) {
     const [rating, setRating] = useState(0)
     const [hoveredRating, setHoveredRating] = useState(0)
@@ -76,7 +74,7 @@ export function ProductRatingDialog({ isOpen, onClose, product, onSubmitRating }
                 <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 mb-6">
                     <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden border">
                         <img
-                            src={product.image_url ? `${API_URL}${product.image_url}` : "/placeholder.svg"}
+                            src={product.image_url || "/placeholder.svg"}
                             alt={product.name}
                             className="w-full h-full object-contain"
                         />

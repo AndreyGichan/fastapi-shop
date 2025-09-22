@@ -4,8 +4,6 @@ import { Card, CardContent } from "../ui/Card"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { deleteCartItem, updateCartItem } from "../../lib/api";
 
-const API_URL = process.env.REACT_APP_API_URL || ""
-
 export function CartItem({ item, setItems }) {
   const [quantity, setQuantity] = useState(item.quantity)
 
@@ -42,7 +40,7 @@ export function CartItem({ item, setItems }) {
         <div className="flex gap-4">
           <div className="relative w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
             <img
-              src={`${API_URL}${item.image_url}` || "/placeholder.svg"}
+              src={item.image_url || "/placeholder.svg"}
               alt={item.name}
               className="w-full h-full object-contain"
             />

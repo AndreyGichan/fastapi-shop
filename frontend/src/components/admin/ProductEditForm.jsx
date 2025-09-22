@@ -47,13 +47,12 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
             discount: product?.discount || undefined,
             image: null,
         })
-        setImagePreview(product?.image_url ? `${API_URL}${product.image_url}` : "")
+        setImagePreview(product?.image_url || "")
         setErrors({})
         setIsNewCategory(!product || !product?.category)
     }, [product])
 
     useEffect(() => {
-        const API_URL = process.env.REACT_APP_API_URL || ""
         fetch(`${API_URL}/products/categories/`)
             .then(res => res.json())
             .then(data => {

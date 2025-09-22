@@ -7,8 +7,6 @@ import { apiFetch } from "../lib/api"
 import { useCart } from "../context/CartContext"
 import { ProductDetailDialog } from "./ProductDetailDialog"
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -37,7 +35,7 @@ const ProductCard = ({ product }) => {
         <CardContent className="p-5 flex flex-col">
           <div className="relative">
             <img
-              src={`${API_URL}${product.image_url}` || "/placeholder.svg"}
+              src={product.image_url || "/placeholder.svg"}
               alt={product.name}
               className="w-full h-48 object-contain rounded-md"
             />

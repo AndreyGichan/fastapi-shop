@@ -6,8 +6,6 @@ import { Package, RotateCcw, Star, ShoppingBag } from "lucide-react";
 import { getUserOrders, getProductRating, ChevronDown, ChevronUp } from "../../lib/api";
 import { ProductRatingDialog } from "./ProductRatingDialog";
 
-const API_URL = process.env.REACT_APP_API_URL || "";
-
 export function ProfileOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -192,8 +190,7 @@ export function ProfileOrders() {
                         <img
                           src={
                             item.image_url
-                              ? `${API_URL}${item.image_url}`
-                              : "/placeholder.svg"
+                              || "/placeholder.svg"
                           }
                           alt={item.name}
                           className="w-20 h-20 object-contain rounded-md bg-white"

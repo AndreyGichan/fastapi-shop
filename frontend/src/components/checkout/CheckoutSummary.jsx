@@ -7,8 +7,6 @@ import { apiFetch, clearCart } from "../../lib/api"
 import { useCart } from "../../context/CartContext"
 import { useToast } from "../ui/useToast"
 
-const API_URL = process.env.REACT_APP_API_URL || ""
-
 export function CheckoutSummary({ items, address, phone }) {
     const { reloadCart } = useCart()
     const [loading, setLoading] = useState(false)
@@ -77,7 +75,7 @@ export function CheckoutSummary({ items, address, phone }) {
                     {items.map((item) => (
                         <div key={item.id} className="flex items-center gap-3">
                             <div className="w-16 h-16 rounded-lg flex items-center justify-center">
-                                <img src={`${API_URL}${item.image_url}` || "/placeholder.svg"} alt={item.name} className="w-full h-full object-contain rounded" />
+                                <img src={item.image_url || "/placeholder.svg"} alt={item.name} className="w-full h-full object-contain rounded" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium truncate">{item.name}</div>

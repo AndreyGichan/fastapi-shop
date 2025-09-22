@@ -11,10 +11,6 @@ import { getProductsForAdmin } from "../../lib/api";
 import { useToast } from "../ui/useToast";
 import { ProductEditDialog } from "./ProductEditDialog"
 
-
-
-const API_URL = process.env.REACT_APP_API_URL || "";
-
 export function AdminProducts() {
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -124,7 +120,7 @@ export function AdminProducts() {
                                 <div className="flex items-center gap-4">
                                     <div className="w-24 h-24 bg-background rounded-lg flex items-center justify-center">
                                         <img
-                                            src={product.image_url ? `${API_URL}${product.image_url}` : "/placeholder.svg"}
+                                            src={product.image_url || "/placeholder.svg"}
                                             alt={product.name}
                                             className="w-full h-full object-contain rounded"
                                         />
