@@ -24,7 +24,9 @@ export async function apiFetch(path, options = {}) {
   if (res.status === 401) {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    window.location.href = "/login";
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
     throw new Error("Unauthorized");
   }
 

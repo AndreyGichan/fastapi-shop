@@ -16,7 +16,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://fastapi-shop-frontend.onrender.com"
+    "https://fastapi-shop-frontend.onrender.com",
 ]
 
 app.add_middleware(
