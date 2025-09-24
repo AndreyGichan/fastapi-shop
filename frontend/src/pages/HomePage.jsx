@@ -33,6 +33,8 @@ const HomePage = () => {
     const [page, setPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const [selectedRatings, setSelectedRatings] = useState([]);
+    const [loading, setLoading] = useState(true);
+
 
 
     useEffect(() => {
@@ -61,6 +63,8 @@ const HomePage = () => {
         params.append("limit", LIMIT.toString())
         params.append("page", page.toString())
 
+        setLoading(true);
+
         fetch(`${API_URL}/products/?${params.toString()}`)
             .then((res) => res.json())
             .then((data) => {
@@ -75,8 +79,8 @@ const HomePage = () => {
                 setHasMore(filteredItems.length === LIMIT);
 
             })
-
             .catch((err) => console.error(err))
+            .finally(() => setLoading(false));
     }, [search, selectedCategories, priceRange, minRating, sortBy, sortOrder, page, selectedRatings])
 
     useEffect(() => {
@@ -270,14 +274,20 @@ const HomePage = () => {
 
                         <div ref={productsRef} className="grid justify-center gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, 250px)', scrollMarginTop: '195px' }}>
 
-                            {products
-                                .filter((product) => product.quantity > 0)
-                                .map((product, idx) => (
-                                    <ProductCard
-                                        key={product.id ?? product._id ?? `${product.name ?? 'product'}-${idx}`}
-                                        product={product}
-                                    />
-                                ))}
+                            {loading ? (
+                                <div className="col-span-full text-center text-gray-500 py-10">
+                                    Загрузка товаров...
+                                </div>
+                            ) : (
+                                products
+                                    .filter((product) => product.quantity > 0)
+                                    .map((product, idx) => (
+                                        <ProductCard
+                                            key={product.id ?? product._id ?? `${product.name ?? 'product'}-${idx}`}
+                                            product={product}
+                                        />
+                                    ))
+                            )}
                         </div>
 
                         <div className="flex justify-center gap-4 mt-8">
