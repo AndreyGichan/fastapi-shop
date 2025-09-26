@@ -48,14 +48,6 @@ export function ProfileOrders() {
     });
   };
 
-  const toggleOrderExpanded = (orderId) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId ? { ...order, expanded: !order.expanded } : order
-      )
-    );
-  };
-
   const handleRateProduct = (item) => {
     setRatingProduct({
       ...item,
@@ -177,7 +169,7 @@ export function ProfileOrders() {
                   <div className="flex items-center gap-2 mb-3">
                     <ShoppingBag className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium text-muted-foreground">
-                      Товары в заказе ({order.items.length})
+                      Товары в заказе ({order.items.reduce((sum, item) => sum + item.quantity, 0)})
                     </span>
                   </div>
 
@@ -190,7 +182,7 @@ export function ProfileOrders() {
                         <img
                           src={
                             item.image_url
-                              || "/placeholder.svg"
+                            || "/placeholder.svg"
                           }
                           alt={item.name}
                           className="w-20 h-20 object-contain rounded-md bg-white"

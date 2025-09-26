@@ -360,10 +360,22 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                     <Label htmlFor="price">Цена (р.) *</Label>
                                     <Input
                                         id="price"
-                                        type="number"
+                                        type="text"
                                         value={formData.price ?? ""}
                                         onChange={(e) => {
-                                            const value = e.target.value === "" ? undefined : Number(e.target.value)
+                                            // const value = e.target.value === "" ? undefined : Number(e.target.value)
+
+                                            let value = e.target.value.replace(/[^0-9.,]/g, "");
+
+                                            value = value.replace(",", ".");
+
+                                            const parts = value.split(".");
+                                            if (parts.length > 2) {
+                                                value = parts[0] + "." + parts.slice(1).join("");
+                                            }
+                                            if (parts[1]?.length > 2) {
+                                                value = parts[0] + "." + parts[1].slice(0, 2);
+                                            }
                                             handleInputChange("price", value)
                                         }}
                                         className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
@@ -383,10 +395,14 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                     <Label htmlFor="originalPrice">Старая цена (р.)</Label>
                                     <Input
                                         id="originalPrice"
-                                        type="number"
+                                        type="text"
                                         value={formData.originalPrice ?? ""}
                                         onChange={(e) => {
-                                            const value = e.target.value === "" ? undefined : Number(e.target.value)
+                                            let value = e.target.value.replace(/[^0-9.,]/g, "");
+                                            value = value.replace(",", ".");
+                                            const parts = value.split(".");
+                                            if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
+                                            if (parts[1]?.length > 2) value = parts[0] + "." + parts[1].slice(0, 2);
                                             handleInputChange("originalPrice", value)
                                         }}
                                         className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
@@ -407,10 +423,14 @@ export function ProductEditForm({ product, onSave, onCancel, readOnly = false })
                                     <Label htmlFor="discount">Скидка (%)</Label>
                                     <Input
                                         id="discount"
-                                        type="number"
+                                        type="text"
                                         value={formData.discount ?? ""}
                                         onChange={(e) => {
-                                            const value = e.target.value === "" ? undefined : Number(e.target.value)
+                                            let value = e.target.value.replace(/[^0-9]/g, "");
+                                            if (value) {
+                                                let num = Math.min(Math.max(Number(value), 0), 100);
+                                                value = num.toString();
+                                            }
                                             handleInputChange("discount", value)
                                         }}
                                         className="border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"

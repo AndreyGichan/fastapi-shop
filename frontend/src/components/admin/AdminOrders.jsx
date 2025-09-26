@@ -3,7 +3,7 @@ import { Button } from "../ui/Button";
 import { Card, CardContent } from "../ui/Card";
 import { Input } from "../ui/Input";
 import { Badge } from "../ui/Badge";
-import { Search, Package, Eye, Edit, RotateCcw } from "lucide-react";
+import { Search, Package, Eye, Edit, RotateCcw, ShoppingBag, ChevronUp, ChevronDown } from "lucide-react";
 import { getOrdersForAdmin } from "../../lib/api";
 import { useToast } from "../ui/useToast";
 import { OrderStatusDialog } from "./OrderStatusDialog";
@@ -45,6 +45,7 @@ export function AdminOrders() {
     const { toast } = useToast();
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [sortDesc, setSortDesc] = useState(true);
+    const [expandedOrders, setExpandedOrders] = useState(new Set());
 
     useEffect(() => {
         async function fetchOrders() {
@@ -81,6 +82,15 @@ export function AdminOrders() {
         });
     };
 
+    const toggleOrderExpansion = (orderId) => {
+        const newExpanded = new Set(expandedOrders);
+        if (newExpanded.has(orderId)) {
+            newExpanded.delete(orderId);
+        } else {
+            newExpanded.add(orderId);
+        }
+        setExpandedOrders(newExpanded);
+    };
 
     const filteredOrders = orders.filter((order) =>
         String(order.id).toLowerCase().includes(searchTerm.toLowerCase())
@@ -150,43 +160,167 @@ export function AdminOrders() {
                     <p className="text-center text-muted-foreground">Нет заказов</p>
                 )}
                 {filteredOrders.map((order) => (
-                    <Card key={order.id} className="bg-background">
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                                    <Package className="h-6 w-6 text-primary" />
-                                </div>
+                    // <Card key={order.id} className="bg-background">
+                    //     <CardContent className="p-6">
+                    //         <div className="flex items-center gap-4">
+                    //             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    //                 <Package className="h-6 w-6 text-primary" />
+                    //             </div>
 
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="font-semibold">№{order.id}</h3>
-                                        <Badge className={statusColors[normalizeStatus(order.status)]}>
-                                            {statusLabels[normalizeStatus(order.status)]}
-                                        </Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mb-2">
-                                        ID клиента: {order.user_id}
-                                    </p>
-                                    <div className="flex items-center gap-4 text-sm">
-                                        <span>Товаров: {order.items?.length ?? 0}</span>
-                                        <span className="font-medium">{(order.total_price ?? 0).toLocaleString()} р.</span>
-                                        <span className="text-muted-foreground">{formatDate(order.created_at)}</span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mt-1">{order.address}</p>
-                                </div>
+                    //             <div className="flex-1">
+                    //                 <div className="flex items-center gap-2 mb-1">
+                    //                     <h3 className="font-semibold">№{order.id}</h3>
+                    //                     <Badge className={statusColors[normalizeStatus(order.status)]}>
+                    //                         {statusLabels[normalizeStatus(order.status)]}
+                    //                     </Badge>
+                    //                 </div>
+                    //                 <p className="text-sm text-muted-foreground mb-2">
+                    //                     ID клиента: {order.user_id}
+                    //                 </p>
+                    //                 <div className="flex items-center gap-4 text-sm">
+                    //                     <span>Товаров: {order.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0}</span>
+                    //                     <span className="font-medium">{(order.total_price ?? 0).toLocaleString()} р.</span>
+                    //                     <span className="text-muted-foreground">{formatDate(order.created_at)}</span>
+                    //                 </div>
+                    //                 <p className="text-sm text-muted-foreground mt-1">{order.address}</p>
+                    //             </div>
 
-                                <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleViewOrder(order)}>
-                                        <Eye className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleEditOrder(order)}>
-                                        <Edit className="h-4 w-4" />
-                                    </Button>
+                    //             <div className="flex items-center gap-2">
+                    //                 <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleViewOrder(order)}>
+                    //                     <Eye className="h-4 w-4" />
+                    //                 </Button>
+                    //                 <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleEditOrder(order)}>
+                    //                     <Edit className="h-4 w-4" />
+                    //                 </Button>
+                    //             </div>
+
+                    //             <div className="flex items-center gap-2">
+                    //                 <Button
+                    //                     variant="outline"
+                    //                     size="sm"
+                    //                     onClick={() => toggleOrderExpansion(order.id)}
+                    //                     className="gap-2 border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
+                    //                 >
+                    //                     <ShoppingBag className="h-4 w-4" />
+                    //                     Товары
+                    //                     {expandedOrders.has(order.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    //                 </Button>
+                    //                 <Button variant="outline" size="sm" onClick={() => handleViewOrder(order)}>
+                    //                     <Eye className="h-4 w-4" />
+                    //                 </Button>
+                    //                 <Button variant="outline" size="sm" onClick={() => handleEditOrder(order)}>
+                    //                     <Edit className="h-4 w-4" />
+                    //                 </Button>
+                    //             </div>
+
+                    //         </div>
+                    //     </CardContent>
+                    // </Card>
+                    <div key={order.id} className="space-y-2">
+                        <Card className="bg-background">
+                            <CardContent className="p-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                        <Package className="h-6 w-6 text-primary" />
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <h3 className="font-semibold">№{order.id}</h3>
+                                            <Badge className={statusColors[normalizeStatus(order.status)]}>
+                                                {statusLabels[normalizeStatus(order.status)]}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mb-2">
+                                            ID клиента: {order.user_id}
+                                        </p>
+                                        <div className="flex items-center gap-4 text-sm">
+                                            <span>
+                                                Товаров:{" "}
+                                                {order.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0}
+                                            </span>
+                                            <span className="font-medium">
+                                                {(order.total_price ?? 0).toLocaleString()} р.
+                                            </span>
+                                            <span className="text-muted-foreground">
+                                                {formatDate(order.created_at)}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mt-1">{order.address}</p>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleViewOrder(order)}>
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="outline" size="sm" className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md" onClick={() => handleEditOrder(order)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => toggleOrderExpansion(order.id)}
+                                            className="gap-2 border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-md"
+                                        >
+                                            <ShoppingBag className="h-4 w-4" />
+                                            Товары
+                                            {expandedOrders.has(order.id) ? (
+                                                <ChevronUp className="h-4 w-4" />
+                                            ) : (
+                                                <ChevronDown className="h-4 w-4" />
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+
+                        {expandedOrders.has(order.id) &&
+                            order.items &&
+                            order.items.length > 0 && (
+                                <div className="mt-4 pt-2 space-y-3">
+                                    {order.items.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className="flex items-center gap-4 p-4 bg-background rounded-lg"
+                                        >
+                                            {item.image_url && (
+                                                <img
+                                                    src={item.image_url}
+                                                    alt={item.name}
+                                                    className="w-16 h-16 object-contain rounded-md bg-white"
+                                                />
+                                            )}
+                                            <div className="flex-1">
+                                                <h4 className="font-medium text-gray-800 mb-1">{item.name}</h4>
+                                                <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                    <span>Количество: {item.quantity}</span>
+                                                    <span className="font-medium">
+                                                        {item.price.toLocaleString()} р.
+                                                    </span>
+                                                    <span className="font-semibold text-primary">
+                                                        Итого: {(item.price * item.quantity).toLocaleString()} р.
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div className="!mt-5 pt-4 border-t border-gray-300 flex items-center text-sm text-muted-foreground">
+                                        <span className="px-4">Общая сумма заказа:</span>
+                                        <span className="font-bold text-primary">
+                                            {order.total_price?.toLocaleString() ?? 0} р.
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                    </div>
+
+
+
                 ))}
+
+
+
             </div>
 
             <OrderStatusDialog

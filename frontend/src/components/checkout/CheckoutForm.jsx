@@ -35,7 +35,10 @@ export function CheckoutForm({ address, setAddress, phone, setPhone }) {
 
             <div
               className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50"
-              onClick={() => setDeliveryMethod("pickup")}
+              onClick={() => {
+                setAddress("Самовывоз");
+                setDeliveryMethod("pickup")
+              }}
             >
               <Checkbox checked={deliveryMethod === "pickup"} onCheckedChange={() => setDeliveryMethod("pickup")} />
               <div className="flex-1">
